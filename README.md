@@ -58,7 +58,7 @@ python scripts/visualize_dataset.py --subject 7 --trial 3
 | Model | Owner | Status |
 |---|---|---|
 | MLP | Shared | Planned |
-| ? | Collaborator A | In development |
+| ? | Hazel | In development |
 | Temporal Conformer | Fantine | In development |
 
 Both architectures must support both input modalities and predict the same 29 scalp EEG channels.
