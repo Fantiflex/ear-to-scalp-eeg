@@ -1,0 +1,32 @@
+
+# Python
+.venv/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.pytest_cache/
+.ruff_cache/
+build/
+dist/
+
+# macOS
+.DS_Store
+
+# Environment
+.env
+.env.*
+
+# Data and experimental outputs
+data/*
+!data/.gitkeep
+
+results/*
+!results/.gitkeep
+
+# Model checkpoints
+*.pt
+*.pth
+*.ckpt
+
+# Jupyter
+.ipynb_checkpoints/
