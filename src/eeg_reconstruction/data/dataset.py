@@ -14,6 +14,9 @@ from eeg_reconstruction.data.channels import (
     CHANNEL_GROUPS,
     get_channel_indices,
 )
+from eeg_reconstruction.data.preprocessing import (
+    interpolate_missing_channels,
+)
 
 
 def _read_trials(value):
@@ -122,6 +125,7 @@ class EarSAADDataset(Dataset):
     def __len__(self):
         return len(self.samples)
 
+    
     def __getitem__(self, idx):
         path, subject_id, trial_idx, start, size = self.samples[idx]
 
@@ -134,29 +138,41 @@ class EarSAADDataset(Dataset):
             # MATLAB: (time, channels)
             # PyTorch: (channels, time)
             signal = window[:, indices[modality]].T.copy()
-            valid = np.isfinite(signal)
 
-            # Replace missing observations only after masking.
-            clean = np.nan_to_num(
+            # Preserve originally observed samples.
+            observed_mask = np.isfinite(signal)
+
+            # Interpolate channels with >= 50% observed samples.
+            clean, valid_channels = interpolate_missing_channels(
                 signal,
-                nan=0.0,
-                posinf=0.0,
-                neginf=0.0,
+                min_valid_fraction=0.5,
             )
 
-            result[modality] = torch.from_numpy(
-                clean.astype(np.float32)
-            )
+            result[modality] = torch.from_numpy(clean)
+
+            # Retained channels contribute to the training loss.
+            retained_mask = np.broadcast_to(
+                valid_channels[:, None],
+                clean.shape,
+            ).copy()
 
             mask_name = (
                 "target_mask"
                 if modality == "scalp"
                 else f"{modality}_mask"
             )
-            result[mask_name] = torch.from_numpy(valid)
 
+            result[mask_name] = torch.from_numpy(retained_mask)
+
+            # Keep original observations for unbiased evaluation.
+            result[f"{modality}_observed_mask"] = (
+                torch.from_numpy(observed_mask.copy())
+            )
+
+        # Metadata required for subject-level evaluation.
         result["subject_id"] = subject_id
         result["trial_id"] = trial_idx + 1
         result["start_sample"] = start
 
         return result
+
