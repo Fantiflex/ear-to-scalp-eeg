@@ -47,7 +47,8 @@ def main():
     for step in range(201):
         optimizer.zero_grad(set_to_none=True)
 
-        prediction = model(x)
+        mask = torch.ones_like(x, dtype=torch.bool)
+        prediction = model(x, mask)
         loss = criterion(prediction, target)
 
         loss.backward()

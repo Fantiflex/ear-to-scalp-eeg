@@ -1,6 +1,5 @@
 
 """Synchronized PyTorch dataset for Ear-SAAD."""
-
 import re
 from functools import lru_cache
 from pathlib import Path
@@ -168,7 +167,6 @@ class EarSAADDataset(Dataset):
             result[f"{modality}_observed_mask"] = (
                 torch.from_numpy(observed_mask.copy())
             )
-
         # Metadata required for subject-level evaluation.
         result["subject_id"] = subject_id
         result["trial_id"] = trial_idx + 1

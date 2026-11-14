@@ -75,7 +75,9 @@ def main():
     model.train()
     optimizer.zero_grad(set_to_none=True)
 
-    prediction = model(x)
+    prediction = model(batch["in_ear"],
+        batch["in_ear_observed_mask"],
+    )
     loss = masked_mse(prediction, y, target_mask)
 
     print(f"Initial masked MSE: {loss.item():.6f}")

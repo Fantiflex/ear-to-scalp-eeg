@@ -7,31 +7,21 @@ import torch
 def masked_mse(
     prediction: torch.Tensor,
     target: torch.Tensor,
-    mask: torch.Tensor,
+    observed_mask: torch.Tensor,
 ) -> torch.Tensor:
-    """MSE computed only on observed target samples."""
-    if prediction.shape != target.shape:
-        raise ValueError("Prediction and target shapes differ")
+    """MSE computed only on observed scalp EEG samples."""
+    if not (
+        prediction.shape == target.shape == observed_mask.shape
+    ):
+        raise ValueError("Prediction, target and mask must match")
 
-    if mask.shape != target.shape:
-        raise ValueError("Mask and target shapes differ")
+    valid = observed_mask.bool() & torch.isfinite(target)
 
-    valid = mask.bool()
+    if not valid.any():
+        raise ValueError("Batch contains no valid scalp targets")
 
-    if not torch.isfinite(prediction).all():
-        raise ValueError("Prediction contains non-finite values")
+    squared_error = (
+        prediction - torch.where(valid, target, 0.0)
+    ).square()
 
-    if not torch.isfinite(target[valid]).all():
-        raise ValueError("Valid targets contain non-finite values")
-
-    if not valid.any().item():
-        raise ValueError("No valid target samples")
-
-    # Avoid overflow from invalid-target values if encountered.
-    residual = torch.where(
-        valid,
-        prediction - target,
-        torch.zeros_like(prediction),
-    )
-
-    return residual.square().sum() / valid.sum()
+    return squared_error[valid].mean()

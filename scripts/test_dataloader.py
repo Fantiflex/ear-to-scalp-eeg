@@ -20,6 +20,26 @@ def main():
 
     sample = dataset[0]
 
+    from pathlib import Path
+
+    import numpy as np
+
+    def to_numpy(x):
+        if hasattr(x, "detach"):
+            return x.detach().cpu().numpy()
+        return np.asarray(x)
+
+    Path("scratch").mkdir(exist_ok=True)
+
+    np.savez(
+        "scratch/ear_sample.npz",
+        eeg=to_numpy(sample["in_ear"]),
+        observed_mask=to_numpy(
+            sample["in_ear_observed_mask"]
+        ),
+    )
+
+
     for key, value in sample.items():
         if isinstance(value, torch.Tensor):
             print(f"{key}: {tuple(value.shape)}")

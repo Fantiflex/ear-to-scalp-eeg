@@ -95,7 +95,7 @@ class TemporalConformer(nn.Module):
             )
 
         self.stem = nn.Conv1d(
-            cfg.in_channels,
+            2 * cfg.in_channels,
             cfg.d_model,
             kernel_size=1,
         )
@@ -113,8 +113,35 @@ class TemporalConformer(nn.Module):
             kernel_size=1,
         )
 
-    def forward(self, x: torch.Tensor) -> torch.Tensor:
-        # x: (batch, ear_channels, time)
+    
+    def forward(
+        self,
+        x: torch.Tensor,
+        observed_mask: torch.Tensor,
+    ) -> torch.Tensor:
+        """Reconstruct scalp EEG from observed ear EEG.
+
+        Args:
+            x: (batch, ear_channels, time)
+            observed_mask: same shape, True for real observations
+
+        Returns:
+            Predicted scalp EEG: (batch, scalp_channels, time)
+        """
+        if x.shape != observed_mask.shape:
+            raise ValueError("EEG and mask shapes must match")
+
+        mask = observed_mask.bool()
+
+        # Never pass missing or non-finite values to the network.
+        x = torch.where(
+            mask,
+            x,
+            torch.zeros_like(x),
+        )
+
+        # Combine EEG measurements and observation status.
+        x = torch.cat([x, mask.to(x.dtype)], dim=1)
 
         z = self.stem(x)
         z = z.transpose(1, 2)
@@ -123,3 +150,4 @@ class TemporalConformer(nn.Module):
 
         z = z.transpose(1, 2)
         return self.head(z)
+
