@@ -30,3 +30,4 @@ results/*
 
 # Jupyter
 .ipynb_checkpoints/
+scratch/

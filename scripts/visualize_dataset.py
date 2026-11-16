@@ -195,7 +195,7 @@ def plot_spectra(trial, indices, fs):
             )
 
             # Normalize spectral area to compare shape.
-            area = np.trapezoid(psd, frequencies)
+            area = np.trapez(psd, frequencies)
 
             if area > 0:
                 psds.append(psd / area)
