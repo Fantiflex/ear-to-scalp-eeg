@@ -108,6 +108,16 @@ def run_epoch(model, loader, modality, device, optimizer=None):
                 y,
                 target_mask,
             )
+            if training and loss.item() > 1000:
+                print(
+                    "HIGH LOSS |",
+                    "subjects:", batch["subject_id"].tolist(),
+                    "max_input:", x.abs().max().item(),
+                    "max_target:", y[target_mask].abs().max().item(),
+                    "max_prediction:", prediction.abs().max().item(),
+                    "loss:", loss.item(),
+                    flush=True,
+                )
 
             if not torch.isfinite(loss):
                 raise RuntimeError("Non-finite loss encountered")
