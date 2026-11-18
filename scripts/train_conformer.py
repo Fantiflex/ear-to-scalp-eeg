@@ -6,6 +6,7 @@ import csv
 import json
 import random
 from pathlib import Path
+from types import SimpleNamespace
 
 import numpy as np
 import torch
@@ -16,8 +17,8 @@ from eeg_reconstruction.models.temporal_conformer import (
     ConformerConfig,
     TemporalConformer,
 )
+from eeg_reconstruction.models.train_val_test_split import make_patient_splits
 from eeg_reconstruction.training.losses import masked_mse
-from eeg_reconstruction.training.splits import make_subject_splits
 
 
 def set_seed(seed):
@@ -180,12 +181,19 @@ def main():
     set_seed(args.seed)
     device = get_device()
 
-    splits = make_subject_splits(seed=args.seed)
+    splits = make_patient_splits(range(1, 16))
 
-    if not 0 <= args.fold < len(splits):
-        parser.error("Invalid fold index")
+    if not 1 <= args.fold <= len(splits):
+        parser.error("Fold must be between 1 and 15")
 
-    split = splits[args.fold]
+    raw_split = splits[args.fold - 1]
+
+    split = SimpleNamespace(
+        fold=raw_split["fold"],
+        train_subjects=tuple(raw_split["train"]),
+        val_subjects=tuple(raw_split["val"]),
+        test_subjects=tuple(raw_split["test"]),
+    )
 
     output_dir = (
         Path(args.output_dir)
@@ -297,14 +305,14 @@ def main():
             break
 
     summary = {
-        "fold": args.fold,
+        "fold": int(args.fold),
         "modality": args.modality,
-        "train_subjects": split.train_subjects,
-        "val_subjects": split.val_subjects,
-        "test_subjects": split.test_subjects,
-        "best_epoch": best_epoch,
-        "best_val_mse": best_val_mse,
-        "best_val_rmse": best_val_mse ** 0.5,
+        "train_subjects": [int(s) for s in split.train_subjects],
+        "val_subjects": [int(s) for s in split.val_subjects],
+        "test_subjects": [int(s) for s in split.test_subjects],
+        "best_epoch": int(best_epoch),
+        "best_val_mse": float(best_val_mse),
+        "best_val_rmse": float(best_val_mse**0.5),
     }
 
     with (output_dir / "summary.json").open("w") as f:
