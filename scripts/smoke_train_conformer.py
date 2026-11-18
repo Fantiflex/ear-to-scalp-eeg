@@ -33,8 +33,8 @@ def main():
 
     x = batch["in_ear"]
     y = batch["scalp"]
-    input_mask = batch["in_ear_mask"]
-    target_mask = batch["target_mask"]
+    input_mask = batch["in_ear_observed_mask"]
+    target_mask = batch["scalp_observed_mask"]
 
     print(f"Sampling rate: {dataset.fs} Hz")
     print(f"Input shape: {tuple(x.shape)}")
@@ -75,9 +75,7 @@ def main():
     model.train()
     optimizer.zero_grad(set_to_none=True)
 
-    prediction = model(batch["in_ear"],
-        batch["in_ear_observed_mask"],
-    )
+    prediction = model(x, input_mask)
     loss = masked_mse(prediction, y, target_mask)
 
     print(f"Initial masked MSE: {loss.item():.6f}")
