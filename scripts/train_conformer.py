@@ -1,0 +1,320 @@
+
+"""Train Temporal Conformer on EAR-SAAD with subject-wise CV."""
+
+import argparse
+import csv
+import json
+import random
+from pathlib import Path
+
+import numpy as np
+import torch
+from torch.utils.data import DataLoader
+
+from eeg_reconstruction.data.dataset import EarSAADDataset
+from eeg_reconstruction.models.temporal_conformer import (
+    ConformerConfig,
+    TemporalConformer,
+)
+from eeg_reconstruction.training.losses import masked_mse
+from eeg_reconstruction.training.splits import make_subject_splits
+
+
+def set_seed(seed):
+    random.seed(seed)
+    np.random.seed(seed)
+    torch.manual_seed(seed)
+
+
+def get_device():
+    if torch.cuda.is_available():
+        return torch.device("cuda")
+    if torch.backends.mps.is_available():
+        return torch.device("mps")
+    return torch.device("cpu")
+
+
+def make_loaders(split, args):
+    train_dataset = EarSAADDataset(
+        data_dir=args.data_dir,
+        subject_ids=split.train_subjects,
+        window_seconds=4.0,
+        stride_seconds=4.0,
+    )
+
+    val_dataset = EarSAADDataset(
+        data_dir=args.data_dir,
+        subject_ids=split.val_subjects,
+        window_seconds=4.0,
+        stride_seconds=4.0,
+    )
+
+    train_ids = {s[1] for s in train_dataset.samples}
+    val_ids = {s[1] for s in val_dataset.samples}
+
+    assert train_ids == set(split.train_subjects)
+    assert val_ids == set(split.val_subjects)
+    assert train_ids.isdisjoint(val_ids)
+    assert train_ids.isdisjoint(split.test_subjects)
+    assert val_ids.isdisjoint(split.test_subjects)
+
+    train_loader = DataLoader(
+        train_dataset,
+        batch_size=args.batch_size,
+        shuffle=True,
+        num_workers=0,
+    )
+
+    val_loader = DataLoader(
+        val_dataset,
+        batch_size=args.batch_size,
+        shuffle=False,
+        num_workers=0,
+    )
+
+    return train_loader, val_loader
+
+
+def run_epoch(model, loader, modality, device, optimizer=None):
+    training = optimizer is not None
+    model.train(training)
+
+    total_squared_error = 0.0
+    total_observations = 0
+
+    for batch in loader:
+        x = batch[modality].to(device)
+        input_mask = batch[
+            f"{modality}_observed_mask"
+        ].to(device)
+
+        y = batch["scalp"].to(device)
+        target_mask = batch[
+            "scalp_observed_mask"
+        ].to(device)
+
+        n_valid = int(target_mask.sum().item())
+        if n_valid == 0:
+            continue
+
+        if training:
+            optimizer.zero_grad(set_to_none=True)
+
+        with torch.set_grad_enabled(training):
+            prediction = model(x, input_mask)
+            loss = masked_mse(
+                prediction,
+                y,
+                target_mask,
+            )
+
+            if not torch.isfinite(loss):
+                raise RuntimeError("Non-finite loss encountered")
+
+            if training:
+                loss.backward()
+                optimizer.step()
+
+        total_squared_error += loss.item() * n_valid
+        total_observations += n_valid
+
+    if total_observations == 0:
+        raise RuntimeError("No observed scalp targets")
+
+    mse = total_squared_error / total_observations
+
+    return {
+        "mse": mse,
+        "rmse": mse ** 0.5,
+        "observations": total_observations,
+    }
+
+
+def save_history(history, path):
+    with path.open("w", newline="") as f:
+        writer = csv.DictWriter(
+            f,
+            fieldnames=[
+                "epoch",
+                "train_mse",
+                "train_rmse",
+                "val_mse",
+                "val_rmse",
+            ],
+        )
+        writer.writeheader()
+        writer.writerows(history)
+
+
+def main():
+    parser = argparse.ArgumentParser()
+
+    parser.add_argument(
+        "--modality",
+        choices=["in_ear", "around_ear"],
+        default="in_ear",
+    )
+    parser.add_argument("--fold", type=int, default=0)
+    parser.add_argument("--epochs", type=int, default=30)
+    parser.add_argument("--batch-size", type=int, default=32)
+    parser.add_argument("--lr", type=float, default=1e-3)
+    parser.add_argument("--weight-decay", type=float, default=1e-2)
+    parser.add_argument("--patience", type=int, default=7)
+    parser.add_argument("--seed", type=int, default=42)
+    parser.add_argument(
+        "--data-dir",
+        default="data/raw/preprocessedData",
+    )
+    parser.add_argument(
+        "--output-dir",
+        default="results/conformer",
+    )
+
+    args = parser.parse_args()
+
+    if args.epochs < 1 or args.batch_size < 1:
+        parser.error("epochs and batch-size must be positive")
+    if args.patience < 1:
+        parser.error("patience must be positive")
+
+    set_seed(args.seed)
+    device = get_device()
+
+    splits = make_subject_splits(seed=args.seed)
+
+    if not 0 <= args.fold < len(splits):
+        parser.error("Invalid fold index")
+
+    split = splits[args.fold]
+
+    output_dir = (
+        Path(args.output_dir)
+        / args.modality
+        / f"fold_{args.fold}"
+    )
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    print(f"Device: {device}")
+    print(f"Fold: {args.fold}")
+    print(f"Modality: {args.modality}")
+    print(f"Train subjects: {split.train_subjects}")
+    print(f"Val subjects: {split.val_subjects}")
+    print(f"Reserved test subjects: {split.test_subjects}")
+
+    train_loader, val_loader = make_loaders(split, args)
+
+    print(f"Train windows: {len(train_loader.dataset)}")
+    print(f"Val windows: {len(val_loader.dataset)}")
+
+    in_channels = 12 if args.modality == "in_ear" else 19
+
+    config = ConformerConfig(
+        in_channels=in_channels,
+        out_channels=29,
+        d_model=64,
+        n_heads=4,
+        n_layers=2,
+        kernel_size=15,
+        dropout=0.1,
+    )
+
+    model = TemporalConformer(config).to(device)
+
+    optimizer = torch.optim.AdamW(
+        model.parameters(),
+        lr=args.lr,
+        weight_decay=args.weight_decay,
+    )
+
+    history = []
+    best_val_mse = float("inf")
+    best_epoch = 0
+    patience_counter = 0
+
+    print(
+        f"Parameters: {sum(p.numel() for p in model.parameters()):,}"
+    )
+
+    for epoch in range(1, args.epochs + 1):
+        train_metrics = run_epoch(
+            model,
+            train_loader,
+            args.modality,
+            device,
+            optimizer,
+        )
+
+        val_metrics = run_epoch(
+            model,
+            val_loader,
+            args.modality,
+            device,
+        )
+
+        row = {
+            "epoch": epoch,
+            "train_mse": train_metrics["mse"],
+            "train_rmse": train_metrics["rmse"],
+            "val_mse": val_metrics["mse"],
+            "val_rmse": val_metrics["rmse"],
+        }
+        history.append(row)
+
+        print(
+            f"Epoch {epoch:03d}/{args.epochs} | "
+            f"Train MSE: {row['train_mse']:.6f} | "
+            f"Val MSE: {row['val_mse']:.6f} | "
+            f"Val RMSE: {row['val_rmse']:.6f}",
+            flush=True,
+        )
+
+        save_history(history, output_dir / "history.csv")
+
+        if val_metrics["mse"] < best_val_mse:
+            best_val_mse = val_metrics["mse"]
+            best_epoch = epoch
+            patience_counter = 0
+
+            torch.save(
+                {
+                    "model_state_dict": model.state_dict(),
+                    "model_config": vars(config),
+                    "args": vars(args),
+                    "fold": args.fold,
+                    "train_subjects": split.train_subjects,
+                    "val_subjects": split.val_subjects,
+                    "test_subjects": split.test_subjects,
+                    "best_epoch": best_epoch,
+                    "best_val_mse": best_val_mse,
+                },
+                output_dir / "best_model.pt",
+            )
+        else:
+            patience_counter += 1
+
+        if patience_counter >= args.patience:
+            print(f"Early stopping at epoch {epoch}")
+            break
+
+    summary = {
+        "fold": args.fold,
+        "modality": args.modality,
+        "train_subjects": split.train_subjects,
+        "val_subjects": split.val_subjects,
+        "test_subjects": split.test_subjects,
+        "best_epoch": best_epoch,
+        "best_val_mse": best_val_mse,
+        "best_val_rmse": best_val_mse ** 0.5,
+    }
+
+    with (output_dir / "summary.json").open("w") as f:
+        json.dump(summary, f, indent=2)
+
+    print("\nTraining complete.")
+    print(f"Best epoch: {best_epoch}")
+    print(f"Best validation MSE: {best_val_mse:.6f}")
+    print(f"Saved to: {output_dir}")
+
+
+if __name__ == "__main__":
+    main()

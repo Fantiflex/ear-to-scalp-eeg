@@ -59,7 +59,7 @@ def make_subject_splits(
         seen.add(val)
 
         train = tuple(
-            s for s in candidates if s not in val
+            int(s) for s in candidates if s not in val
         )
 
         splits.append(
