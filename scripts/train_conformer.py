@@ -12,7 +12,7 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
-from eeg_reconstruction.data.dataset import EarSAADDataset
+from eeg_reconstruction.data.numpy_dataset import EarSAADNumpyDataset
 from eeg_reconstruction.models.temporal_conformer import (
     ConformerConfig,
     TemporalConformer,
@@ -36,14 +36,14 @@ def get_device():
 
 
 def make_loaders(split, args):
-    train_dataset = EarSAADDataset(
+    train_dataset = EarSAADNumpyDataset(
         data_dir=args.data_dir,
         subject_ids=split.train_subjects,
         window_seconds=4.0,
         stride_seconds=4.0,
     )
 
-    val_dataset = EarSAADDataset(
+    val_dataset = EarSAADNumpyDataset(
         data_dir=args.data_dir,
         subject_ids=split.val_subjects,
         window_seconds=4.0,
@@ -164,7 +164,7 @@ def main():
     parser.add_argument("--seed", type=int, default=42)
     parser.add_argument(
         "--data-dir",
-        default="data/raw/preprocessedData",
+        default="data/processed/numpy",
     )
     parser.add_argument(
         "--output-dir",
