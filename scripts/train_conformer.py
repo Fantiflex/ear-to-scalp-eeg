@@ -18,7 +18,10 @@ from eeg_reconstruction.models.temporal_conformer import (
     TemporalConformer,
 )
 from eeg_reconstruction.models.train_val_test_split import make_patient_splits
-from eeg_reconstruction.training.losses import masked_mse
+from eeg_reconstruction.training.losses import (
+    hybrid_loss,
+    masked_mse,
+)
 
 
 def set_seed(seed):
@@ -103,11 +106,15 @@ def run_epoch(model, loader, modality, device, optimizer=None):
 
         with torch.set_grad_enabled(training):
             prediction = model(x, input_mask)
-            loss = masked_mse(
-                prediction,
-                y,
-                target_mask,
-            )
+            if args.loss == "hybrid":
+                loss = hybrid_loss(
+                    prediction,
+                    y,
+                    target_mask,
+                    pearson_weight=args.pearson_weight,
+                )
+            else:
+                loss = masked_mse(prediction, y, target_mask)
             if training and loss.item() > 1000:
                 print(
                     "HIGH LOSS |",
@@ -179,6 +186,17 @@ def main():
     parser.add_argument(
         "--output-dir",
         default="results/conformer",
+    )
+    parser.add_argument(
+        "--loss",
+        choices=["mse", "hybrid"],
+        default="mse",
+    )
+
+    parser.add_argument(
+        "--pearson-weight",
+        type=float,
+        default=1.0,
     )
 
     args = parser.parse_args()
