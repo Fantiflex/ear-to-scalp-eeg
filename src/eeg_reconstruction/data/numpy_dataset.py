@@ -9,6 +9,8 @@ import numpy as np
 import torch
 from torch.utils.data import Dataset
 
+from eeg_reconstruction.data.quality import is_valid_eeg_window
+
 
 @lru_cache(maxsize=15)
 def _load_numpy(path):
@@ -73,11 +75,20 @@ class EarSAADNumpyDataset(Dataset):
                 trial_start = offsets[trial_idx]
                 trial_end = offsets[trial_idx + 1]
 
-                for start in range(
-                    trial_start,
-                    trial_end - window_size + 1,
-                    stride_size,
+                for window_idx, start in enumerate(
+                    range(
+                        trial_start,
+                        trial_end - window_size + 1,
+                        stride_size,
+                    )
                 ):
+                    if not is_valid_eeg_window(
+                        subject_id=subject_id,
+                        trial_id=trial_idx + 1,
+                        window_idx=window_idx,
+                    ):
+                        continue
+
                     self.samples.append(
                         (
                             str(signal_path),
