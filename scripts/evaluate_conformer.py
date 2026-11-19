@@ -177,6 +177,136 @@ def plot_reconstructions(examples, output_dir, fs):
         plt.close(fig)
 
 
+def analyze_amplitude(target, prediction, mask, subject_ids, output_dir):
+    """Measure prediction amplitude attenuation per subject and channel."""
+    import pandas as pd
+
+    records = []
+
+    for subject in np.unique(subject_ids):
+        selected = subject_ids == subject
+
+        for ch in range(target.shape[1]):
+            valid = mask[selected, ch, :].astype(bool)
+
+            y = target[selected, ch, :][valid]
+            p = prediction[selected, ch, :][valid]
+
+            if len(y) < 2:
+                continue
+
+            target_std = float(np.std(y))
+            pred_std = float(np.std(p))
+
+            ratio = (
+                pred_std / target_std
+                if target_std > 1e-8
+                else float("nan")
+            )
+
+            records.append({
+                "subject": int(subject),
+                "channel": ch,
+                "target_std": target_std,
+                "prediction_std": pred_std,
+                "std_ratio": ratio,
+                "n_observed": len(y),
+            })
+
+    df = pd.DataFrame(records)
+
+    df.to_csv(
+        output_dir / "amplitude_analysis.csv",
+        index=False,
+    )
+
+    # Figure 1: amplitude ratios by scalp channel and subject
+    fig, ax = plt.subplots(figsize=(11, 5))
+
+    for subject, group in df.groupby("subject"):
+        ax.plot(
+            group["channel"],
+            group["std_ratio"],
+            marker="o",
+            markersize=3,
+            label=f"Subject {subject}",
+        )
+
+    ax.axhline(
+        1.0,
+        color="gray",
+        linestyle="--",
+        label="Perfect variance ratio",
+    )
+
+    ax.set_xlabel("Scalp channel")
+    ax.set_ylabel("Prediction std / Target std")
+    ax.set_title("EEG Amplitude Attenuation by Channel")
+    ax.set_xticks(range(target.shape[1]))
+    ax.legend()
+    ax.grid(alpha=0.2)
+
+    fig.tight_layout()
+    fig.savefig(
+        output_dir / "amplitude_ratio_per_channel.png",
+        dpi=300,
+    )
+    plt.close(fig)
+
+    # Figure 2: target and prediction standard deviations
+    grouped = df.groupby("channel")[
+        ["target_std", "prediction_std"]
+    ].mean()
+
+    fig, ax = plt.subplots(figsize=(11, 5))
+
+    x = np.arange(len(grouped))
+    width = 0.4
+
+    ax.bar(
+        x - width / 2,
+        grouped["target_std"],
+        width,
+        label="Ground truth",
+    )
+    ax.bar(
+        x + width / 2,
+        grouped["prediction_std"],
+        width,
+        label="Conformer",
+    )
+
+    ax.set_xlabel("Scalp channel")
+    ax.set_ylabel("Standard deviation")
+    ax.set_title("EEG Signal Variability: Target vs Prediction")
+    ax.set_xticks(x)
+    ax.legend()
+
+    fig.tight_layout()
+    fig.savefig(
+        output_dir / "amplitude_std_comparison.png",
+        dpi=300,
+    )
+    plt.close(fig)
+
+    print("\n=== Amplitude Analysis ===")
+    for subject, group in df.groupby("subject"):
+        print(
+            f"Subject {subject}: "
+            f"median std ratio = "
+            f"{group['std_ratio'].median():.4f}"
+        )
+
+    print(
+        "Overall median std ratio:",
+        f"{df['std_ratio'].median():.4f}",
+    )
+
+    return df
+
+
+
+
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fold", type=int, default=1)
@@ -231,6 +361,7 @@ def main():
     predictions = []
     masks = []
     examples = {}
+    all_subject_ids = []
 
     with torch.inference_mode():
         for batch in loader:
@@ -239,7 +370,9 @@ def main():
             targets.append(batch["scalp"].numpy())
             predictions.append(pred.cpu().numpy())
             masks.append(batch["target_mask"].numpy())
-
+            all_subject_ids.append(
+                batch["subject_id"].numpy()
+            )
             for i, subject in enumerate(batch["subject_id"]):
                 subject = int(subject)
                 if subject not in examples:
@@ -248,10 +381,12 @@ def main():
                         pred[i].cpu().numpy(),
                         batch["target_mask"][i].numpy(),
                     )
+            
 
     target = np.concatenate(targets)
     prediction = np.concatenate(predictions)
     mask = np.concatenate(masks)
+    subject_ids = np.concatenate(all_subject_ids)
 
     metrics = calculate_metrics(target, prediction, mask)
 
@@ -266,6 +401,13 @@ def main():
         examples,
         args.output_dir,
         dataset.fs,
+    )
+    analyze_amplitude(
+        target=target,
+        prediction=prediction,
+        mask=mask,
+        subject_ids=subject_ids,
+        output_dir=args.output_dir,
     )
 
     print("\n=== Validation Metrics ===")
