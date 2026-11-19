@@ -79,7 +79,7 @@ def make_loaders(split, args):
     return train_loader, val_loader
 
 
-def run_epoch(model, loader, modality, device, optimizer=None):
+def run_epoch(model, loader, modality, device, optimizer=None, args=None):
     training = optimizer is not None
     model.train(training)
 
