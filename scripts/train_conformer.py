@@ -79,7 +79,15 @@ def make_loaders(split, args):
     return train_loader, val_loader
 
 
-def run_epoch(model, loader, modality, device, optimizer=None, loss_type="mse", pearson_weight=1.0):
+def run_epoch(
+    model,
+    loader,
+    device,
+    modality,
+    optimizer=None,
+    loss_type="mse",
+    pearson_weight=1.0,
+):
     training = optimizer is not None
     model.train(training)
 
@@ -93,9 +101,7 @@ def run_epoch(model, loader, modality, device, optimizer=None, loss_type="mse", 
         ].to(device)
 
         y = batch["scalp"].to(device)
-        target_mask = batch[
-            "scalp_observed_mask"
-        ].to(device)
+        target_mask = batch["target_mask"].to(device)
 
         n_valid = int(target_mask.sum().item())
         if n_valid == 0:
@@ -106,7 +112,10 @@ def run_epoch(model, loader, modality, device, optimizer=None, loss_type="mse", 
 
         with torch.set_grad_enabled(training):
             prediction = model(x, input_mask)
-            if loss_type == "hybrid":
+
+            mse_loss = masked_mse(prediction, y, target_mask)
+
+            if training and loss_type == "hybrid":
                 loss = hybrid_loss(
                     prediction,
                     y,
@@ -114,7 +123,7 @@ def run_epoch(model, loader, modality, device, optimizer=None, loss_type="mse", 
                     pearson_weight=pearson_weight,
                 )
             else:
-                loss = masked_mse(prediction, y, target_mask)
+                loss = mse_loss
             if training and loss.item() > 1000:
                 print(
                     "HIGH LOSS |",
@@ -133,7 +142,7 @@ def run_epoch(model, loader, modality, device, optimizer=None, loss_type="mse", 
                 loss.backward()
                 optimizer.step()
 
-        total_squared_error += loss.item() * n_valid
+        total_squared_error += mse_loss.detach().item() * n_valid
         total_observations += n_valid
 
     if total_observations == 0:
