@@ -79,7 +79,7 @@ def make_loaders(split, args):
     return train_loader, val_loader
 
 
-def run_epoch(model, loader, modality, device, optimizer=None, args=None):
+def run_epoch(model, loader, modality, device, optimizer=None, loss_type="mse", pearson_weight=1.0):
     training = optimizer is not None
     model.train(training)
 
@@ -106,12 +106,12 @@ def run_epoch(model, loader, modality, device, optimizer=None, args=None):
 
         with torch.set_grad_enabled(training):
             prediction = model(x, input_mask)
-            if args.loss == "hybrid":
+            if loss_type == "hybrid":
                 loss = hybrid_loss(
                     prediction,
                     y,
                     target_mask,
-                    pearson_weight=args.pearson_weight,
+                    pearson_weight=pearson_weight,
                 )
             else:
                 loss = masked_mse(prediction, y, target_mask)
@@ -275,16 +275,20 @@ def main():
         train_metrics = run_epoch(
             model,
             train_loader,
-            args.modality,
             device,
+            args.modality,
             optimizer,
+            loss_type=args.loss,
+            pearson_weight=args.pearson_weight,
         )
 
         val_metrics = run_epoch(
             model,
             val_loader,
-            args.modality,
             device,
+            args.modality,
+            optimizer=None,
+            loss_type="mse",
         )
 
         row = {
