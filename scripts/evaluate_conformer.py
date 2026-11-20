@@ -16,6 +16,7 @@ from eeg_reconstruction.data.normalization import (
     normalize_batch,
 )
 from eeg_reconstruction.data.numpy_dataset import EarSAADNumpyDataset
+from eeg_reconstruction.data.rereferencing import rereference_batch
 from eeg_reconstruction.models.spatial_conformer import SpatialConformer
 from eeg_reconstruction.models.temporal_conformer import (
     ConformerConfig,
@@ -27,7 +28,7 @@ def load_model(checkpoint_path, device, expected_fold):
     checkpoint = torch.load(
         checkpoint_path,
         map_location="cpu",
-        weights_only=False,  # Only load checkpoints you trust.
+        weights_only=False,  # Only load trusted checkpoints.
     )
 
     if int(checkpoint["fold"]) != expected_fold:
@@ -56,37 +57,65 @@ def load_model(checkpoint_path, device, expected_fold):
 
 
 
-def predict(model, batch, modality, device, normalization_stats=None):
-    """Predict scalp EEG and return signals in original units."""
+
+def predict(
+    model,
+    batch,
+    modality,
+    device,
+    rereference_mode="none",
+    normalization_stats=None,
+):
+    """Predict scalp EEG in its original physical units."""
+
+    # 1. Apply the same reference montage as training.
+    if rereference_mode != "none":
+        if modality != "in_ear":
+            raise ValueError(
+                "Re-referencing is currently supported "
+                "only for in-ear EEG."
+            )
+
+        batch = rereference_batch(
+            batch,
+            mode=rereference_mode,
+        )
+
+    # 2. Apply training-only normalization statistics.
     if normalization_stats is not None:
-        normalized = normalize_batch(
+        batch = normalize_batch(
             batch,
             normalization_stats,
             device=device,
         )
-        x = normalized[modality]
-    else:
-        x = batch[modality].to(device)
 
-    mask = batch[f"{modality}_observed_mask"].to(device)
+    # 3. Prepare the model inputs.
+    x = batch[modality].to(device)
+    mask = batch[
+        f"{modality}_observed_mask"
+    ].to(device)
 
-    parameters = inspect.signature(model.forward).parameters
+    # 4. Predict in the model's output space.
+    parameters = inspect.signature(
+        model.forward
+    ).parameters
 
     if "observed_mask" in parameters:
-        pred = model(x, observed_mask=mask)
+        prediction = model(x, observed_mask=mask)
     elif len(parameters) >= 2:
-        pred = model(x, mask)
+        prediction = model(x, mask)
     else:
-        pred = model(x)
+        prediction = model(x)
 
+    # 5. Restore scalp EEG to original units.
     if normalization_stats is not None:
-        pred = inverse_normalize(
-            pred,
+        prediction = inverse_normalize(
+            prediction,
             normalization_stats,
             modality="scalp",
         )
 
-    return pred
+    return prediction
 
 
 def calculate_metrics(target, prediction, mask):
@@ -372,6 +401,30 @@ def main():
     model, checkpoint = load_model(
         args.checkpoint, device, args.fold
     )
+    checkpoint_args = checkpoint.get("args", {})
+
+    modality = checkpoint_args.get("modality", "in_ear")
+    rereference_mode = checkpoint_args.get(
+        "rereference", "none"
+    )
+    normalization_stats = checkpoint.get(
+        "normalization_stats"
+    )
+
+    normalization_mode = checkpoint_args.get(
+        "normalization", "none"
+    )
+
+    if normalization_mode != "none" and normalization_stats is None:
+        raise ValueError(
+            "Checkpoint requires normalization but "
+            "contains no normalization statistics."
+        )
+
+    print("Model:", checkpoint.get("model_type", "temporal"))
+    print("Modality:", modality)
+    print("Re-referencing:", rereference_mode)
+    print("Normalization:", normalization_mode)
     normalization_stats = checkpoint.get(
         "normalization_stats"
     )
@@ -381,7 +434,6 @@ def main():
         checkpoint.get("args", {}).get("normalization", "none"),
     )
 
-    modality = checkpoint["args"]["modality"]
     val_subjects = [
         int(s) for s in checkpoint["val_subjects"]
     ]
@@ -414,9 +466,9 @@ def main():
                 batch,
                 modality,
                 device,
+                rereference_mode=rereference_mode,
                 normalization_stats=normalization_stats,
             )
-
             targets.append(batch["scalp"].numpy())
             predictions.append(pred.cpu().numpy())
             masks.append(batch["target_mask"].numpy())
