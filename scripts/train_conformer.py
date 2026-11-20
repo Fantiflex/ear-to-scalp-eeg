@@ -228,7 +228,24 @@ def run_epoch(
                 original_y,
                 target_mask,
             )
+        if (
+            normalization_stats is not None
+            and normalization_stats["scalp"]["mode"] == "global"
+            and total_observations == 0
+        ):
+            sigma = normalization_stats["scalp"]["std"]
 
+            expected_mse = mse_loss.item() * sigma**2
+            measured_mse = original_mse.item()
+
+            print("\n=== Normalization diagnostic ===")
+            print(f"Normalized MSE: {mse_loss.item():.6f}")
+            print(f"Expected original MSE: {expected_mse:.6f}")
+            print(f"Measured original MSE: {measured_mse:.6f}")
+            print(
+                "Difference:",
+                abs(expected_mse - measured_mse),
+            )
         total_squared_error += original_mse.item() * n_valid
         total_observations += n_valid
 
