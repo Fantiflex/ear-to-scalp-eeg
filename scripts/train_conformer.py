@@ -16,6 +16,11 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
+from eeg_reconstruction.data.normalization import (
+    fit_normalization,
+    inverse_normalize,
+    normalize_batch,
+)
 from eeg_reconstruction.data.numpy_dataset import EarSAADNumpyDataset
 from eeg_reconstruction.models.spatial_conformer import SpatialConformer
 from eeg_reconstruction.models.temporal_conformer import (
@@ -129,6 +134,7 @@ def run_epoch(
     loss_type="mse",
     pearson_weight=1.0,
     derivative_weight=0.1,
+    normalization_stats=None,
 ):
     training = optimizer is not None
     model.train(training)
@@ -137,7 +143,21 @@ def run_epoch(
     total_observations = 0
 
     for batch in loader:
-        x = batch[modality].to(device)
+        original_y = batch["scalp"].to(device)
+        target_mask = batch["target_mask"].to(device)
+
+        if normalization_stats is not None:
+            normalized = normalize_batch(
+                batch,
+                normalization_stats,
+                device=device,
+            )
+        else:
+            normalized = batch
+
+        x = normalized[modality].to(device)
+        y = normalized["scalp"].to(device)
+
         input_mask = batch[
             f"{modality}_observed_mask"
         ].to(device)
@@ -193,7 +213,23 @@ def run_epoch(
                 loss.backward()
                 optimizer.step()
 
-        total_squared_error += mse_loss.detach().item() * n_valid
+        with torch.no_grad():
+            if normalization_stats is not None:
+                original_prediction = inverse_normalize(
+                    prediction.detach(),
+                    normalization_stats,
+                    modality="scalp",
+                )
+            else:
+                original_prediction = prediction.detach()
+
+            original_mse = masked_mse(
+                original_prediction,
+                original_y,
+                target_mask,
+            )
+
+        total_squared_error += original_mse.item() * n_valid
         total_observations += n_valid
 
     if total_observations == 0:
@@ -272,6 +308,11 @@ def main():
         type=float,
         default=0.1,
     )
+    parser.add_argument(
+        "--normalization",
+        choices=["none", "global", "channel"],
+        default="none",
+    )
 
     args = parser.parse_args()
 
@@ -338,6 +379,7 @@ def main():
         / f"fold_{args.fold:02d}"
         / f"{args.model}_conformer"
         / experiment_name
+        / f"norm_{args.normalization}"
         / run_name
     )
 
@@ -372,6 +414,18 @@ def main():
     print(f"Reserved test subjects: {split.test_subjects}")
 
     train_loader, val_loader = make_loaders(split, args)
+    normalization_stats = fit_normalization(
+        train_loader,
+        mode=args.normalization,
+        modalities=(args.modality, "scalp"),
+    )
+
+    (output_dir / "normalization_stats.json").write_text(
+        json.dumps(normalization_stats, indent=2)
+    )
+
+    print(f"Normalization: {args.normalization}")
+    print("Normalization statistics saved.")
 
     print(f"Train windows: {len(train_loader.dataset)}")
     print(f"Val windows: {len(val_loader.dataset)}")
@@ -420,6 +474,7 @@ def main():
             loss_type=args.loss,
             pearson_weight=args.pearson_weight,
             derivative_weight=args.derivative_weight,
+            normalization_stats=normalization_stats,
         )
 
         val_metrics = run_epoch(
@@ -429,6 +484,7 @@ def main():
             args.modality,
             optimizer=None,
             loss_type="mse",
+            normalization_stats=normalization_stats,
         )
 
         row = {
@@ -467,6 +523,7 @@ def main():
                     "test_subjects": split.test_subjects,
                     "best_epoch": best_epoch,
                     "best_val_mse": best_val_mse,
+                    "normalization_stats": normalization_stats,
                 },
                 output_dir / "best_model.pt",
             )
@@ -488,6 +545,7 @@ def main():
         "best_val_rmse": float(best_val_mse**0.5),
         "model_type": args.model,
         "parameters": sum(p.numel() for p in model.parameters()),
+        "normalization": args.normalization,
     }
 
     with (output_dir / "summary.json").open("w") as f:

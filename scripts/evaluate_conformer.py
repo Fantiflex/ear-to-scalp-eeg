@@ -11,6 +11,10 @@ import numpy as np
 import torch
 from torch.utils.data import DataLoader
 
+from eeg_reconstruction.data.normalization import (
+    inverse_normalize,
+    normalize_batch,
+)
 from eeg_reconstruction.data.numpy_dataset import EarSAADNumpyDataset
 from eeg_reconstruction.models.spatial_conformer import SpatialConformer
 from eeg_reconstruction.models.temporal_conformer import (
@@ -51,19 +55,38 @@ def load_model(checkpoint_path, device, expected_fold):
     return model, checkpoint
 
 
-def predict(model, batch, modality, device):
-    x = batch[modality].to(device)
+
+def predict(model, batch, modality, device, normalization_stats=None):
+    """Predict scalp EEG and return signals in original units."""
+    if normalization_stats is not None:
+        normalized = normalize_batch(
+            batch,
+            normalization_stats,
+            device=device,
+        )
+        x = normalized[modality]
+    else:
+        x = batch[modality].to(device)
+
     mask = batch[f"{modality}_observed_mask"].to(device)
 
-    # Compatible with implementations using forward(x, mask)
-    # and older implementations using forward(x).
     parameters = inspect.signature(model.forward).parameters
 
     if "observed_mask" in parameters:
-        return model(x, observed_mask=mask)
-    if len(parameters) >= 2:
-        return model(x, mask)
-    return model(x)
+        pred = model(x, observed_mask=mask)
+    elif len(parameters) >= 2:
+        pred = model(x, mask)
+    else:
+        pred = model(x)
+
+    if normalization_stats is not None:
+        pred = inverse_normalize(
+            pred,
+            normalization_stats,
+            modality="scalp",
+        )
+
+    return pred
 
 
 def calculate_metrics(target, prediction, mask):
@@ -349,6 +372,14 @@ def main():
     model, checkpoint = load_model(
         args.checkpoint, device, args.fold
     )
+    normalization_stats = checkpoint.get(
+        "normalization_stats"
+    )
+
+    print(
+        "Normalization:",
+        checkpoint.get("args", {}).get("normalization", "none"),
+    )
 
     modality = checkpoint["args"]["modality"]
     val_subjects = [
@@ -378,7 +409,13 @@ def main():
 
     with torch.inference_mode():
         for batch in loader:
-            pred = predict(model, batch, modality, device)
+            pred = predict(
+                model,
+                batch,
+                modality,
+                device,
+                normalization_stats=normalization_stats,
+            )
 
             targets.append(batch["scalp"].numpy())
             predictions.append(pred.cpu().numpy())
