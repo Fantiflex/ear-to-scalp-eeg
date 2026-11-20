@@ -37,6 +37,7 @@ def lagged_correlation(x, y, mx, my, lag, min_samples=200):
     return float(np.corrcoef(xv, yv)[0, 1])
 
 
+
 def analyze_subject(data_dir, subject, max_lag=10):
     dataset = EarSAADNumpyDataset(
         data_dir=data_dir,
@@ -52,8 +53,8 @@ def analyze_subject(data_dir, subject, max_lag=10):
         mxs.append(batch["in_ear_observed_mask"].numpy())
         mys.append(batch["scalp_observed_mask"].numpy())
 
-    x = np.concatenate(xs)
-    y = np.concatenate(ys)
+    x = np.concatenate(xs).astype(np.float64)
+    y = np.concatenate(ys).astype(np.float64)
     mx = np.concatenate(mxs).astype(bool)
     my = np.concatenate(mys).astype(bool)
 
@@ -61,31 +62,55 @@ def analyze_subject(data_dir, subject, max_lag=10):
     correlations = np.full((len(lags), 12, 29), np.nan)
 
     for lag_idx, lag in enumerate(lags):
-        for i in range(12):
-            for j in range(29):
-                # Calculate independently inside each 4-second window.
-                values = []
-                weights = []
+        if lag > 0:
+            xa, ya = x[..., :-lag], y[..., lag:]
+            ma, mb = mx[..., :-lag], my[..., lag:]
+        elif lag < 0:
+            k = -lag
+            xa, ya = x[..., k:], y[..., :-k]
+            ma, mb = mx[..., k:], my[..., :-k]
+        else:
+            xa, ya = x, y
+            ma, mb = mx, my
 
-                for w in range(len(x)):
-                    corr = lagged_correlation(
-                        x[w, i],
-                        y[w, j],
-                        mx[w, i],
-                        my[w, j],
-                        int(lag),
-                        min_samples=20,
-                    )
-                    if np.isfinite(corr):
-                        values.append(corr)
-                        weights.append(
-                            max(x.shape[-1] - abs(lag) - 3, 1)
-                        )
+        # Flatten windows while preserving aligned pairs.
+        xa = xa.transpose(1, 0, 2).reshape(12, -1)
+        ya = ya.transpose(1, 0, 2).reshape(29, -1)
+        ma = ma.transpose(1, 0, 2).reshape(12, -1)
+        mb = mb.transpose(1, 0, 2).reshape(29, -1)
 
-                if values:
-                    correlations[lag_idx, i, j] = np.average(
-                        values, weights=weights
-                    )
+        # Masked pairwise statistics.
+        a = np.where(ma, xa, 0.0)
+        b = np.where(mb, ya, 0.0)
+
+        ma_f = ma.astype(np.float64)
+        mb_f = mb.astype(np.float64)
+
+        n = ma_f @ mb_f.T
+        sum_x = a @ mb_f.T
+        sum_y = ma_f @ b.T
+        sum_x2 = (a * a) @ mb_f.T
+        sum_y2 = ma_f @ (b * b).T
+        sum_xy = a @ b.T
+
+        safe_n = np.maximum(n, 1.0)
+        cov = sum_xy - sum_x * sum_y / safe_n
+        var_x = sum_x2 - sum_x**2 / safe_n
+        var_y = sum_y2 - sum_y**2 / safe_n
+
+        denom = np.sqrt(
+            np.maximum(var_x, 0.0) *
+            np.maximum(var_y, 0.0)
+        )
+
+        valid = (n >= 200) & (denom > 1e-12)
+
+        correlations[lag_idx] = np.divide(
+            cov,
+            denom,
+            out=np.full_like(cov, np.nan),
+            where=valid,
+        )
 
     return lags, correlations
 
