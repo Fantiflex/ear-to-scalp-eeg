@@ -2,9 +2,13 @@
 """Train Temporal Conformer on EAR-SAAD with subject-wise CV."""
 
 import argparse
+import atexit
 import csv
 import json
+import os
 import random
+import sys
+from datetime import UTC, datetime
 from pathlib import Path
 from types import SimpleNamespace
 
@@ -24,6 +28,41 @@ from eeg_reconstruction.training.losses import (
     masked_temporal_derivative_loss,
 )
 
+
+class Tee:
+    """Write console output to both terminal and a log file."""
+
+    def __init__(self, terminal, log_file):
+        self.terminal = terminal
+        self.log_file = log_file
+
+    def write(self, message):
+        self.terminal.write(message)
+        self.log_file.write(message)
+        self.log_file.flush()
+
+    def flush(self):
+        self.terminal.flush()
+        self.log_file.flush()
+
+
+def start_file_logging(output_dir):
+    log_file = (output_dir / "train.log").open(
+        "a", encoding="utf-8", buffering=1
+    )
+
+    original_stdout = sys.stdout
+    original_stderr = sys.stderr
+
+    sys.stdout = Tee(original_stdout, log_file)
+    sys.stderr = Tee(original_stderr, log_file)
+
+    def cleanup():
+        sys.stdout = original_stdout
+        sys.stderr = original_stderr
+        log_file.close()
+
+    atexit.register(cleanup)
 
 def set_seed(seed):
     random.seed(seed)
@@ -205,7 +244,10 @@ def main():
     )
     parser.add_argument(
         "--output-dir",
-        default="results/conformer",
+        default=os.environ.get(
+            "EEG_RESULTS_DIR",
+            "/content/drive/MyDrive/ear-to-scalp-eeg/experiments",
+        ),
     )
     parser.add_argument(
         "--loss",
@@ -233,7 +275,21 @@ def main():
         parser.error("patience must be positive")
     if not np.isfinite(args.derivative_weight) or args.derivative_weight < 0:
         parser.error("derivative-weight must be finite and non-negative")
+    if args.loss == "mse":
+        experiment_name = "mse"
 
+    elif args.loss == "hybrid":
+        experiment_name = f"mse_pearson_w{args.pearson_weight:g}"
+
+    elif args.loss == "derivative":
+        experiment_name = (
+            f"mse_derivative_w{args.derivative_weight:g}"
+        )
+
+    else:
+        parser.error(f"Unsupported loss: {args.loss}")
+
+    
     set_seed(args.seed)
     device = get_device()
 
@@ -251,16 +307,54 @@ def main():
         test_subjects=tuple(raw_split["test"]),
     )
 
-    output_dir = (
-        Path(args.output_dir)
-        / args.modality
-        / f"fold_{args.fold}"
-        / (
-            f"derivative_{args.derivative_weight:g}"
-            if args.loss == "derivative"
-            else args.loss
+    # Ensure the persistent storage is available.
+    results_root = Path(args.output_dir).expanduser()
+
+    if (
+        str(results_root).startswith("/content/drive/")
+        and not Path("/content/drive/MyDrive").is_dir()
+    ):
+        parser.error(
+            "Google Drive is not mounted. "
+            "Run drive.mount('/content/drive') first."
         )
+
+    # Unique timestamp prevents overwriting previous experiments.
+    timestamp = datetime.now(UTC).strftime(
+        "%Y%m%d_%H%M%S_%f"
     )
+
+    run_name = f"seed_{args.seed}_{timestamp}"
+
+    output_dir = (
+        results_root
+        / args.modality
+        / f"fold_{args.fold:02d}"
+        / experiment_name
+        / run_name
+    )
+
+    output_dir.mkdir(parents=True, exist_ok=False)
+
+    # Save the complete run configuration.
+    run_config = {
+        **vars(args),
+        "experiment_name": experiment_name,
+        "run_name": run_name,
+        "train_subjects": list(split.train_subjects),
+        "val_subjects": list(split.val_subjects),
+        "test_subjects": list(split.test_subjects),
+    }
+
+    (output_dir / "config.json").write_text(
+        json.dumps(run_config, indent=2)
+    )
+
+    # Save console logs automatically.
+    start_file_logging(output_dir)
+
+    print(f"Experiment: {experiment_name}")
+    print(f"Results directory: {output_dir}")
     output_dir.mkdir(parents=True, exist_ok=True)
 
     print(f"Device: {device}")
