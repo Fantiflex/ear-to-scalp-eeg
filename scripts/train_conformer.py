@@ -21,6 +21,7 @@ from eeg_reconstruction.models.train_val_test_split import make_patient_splits
 from eeg_reconstruction.training.losses import (
     hybrid_loss,
     masked_mse,
+    masked_temporal_derivative_loss,
 )
 
 
@@ -87,6 +88,7 @@ def run_epoch(
     optimizer=None,
     loss_type="mse",
     pearson_weight=1.0,
+    derivative_weight=0.1,
 ):
     training = optimizer is not None
     model.train(training)
@@ -122,6 +124,15 @@ def run_epoch(
                     target_mask,
                     pearson_weight=pearson_weight,
                 )
+
+            elif training and loss_type == "derivative":
+                diff_loss = masked_temporal_derivative_loss(
+                    prediction,
+                    y,
+                    target_mask,
+                )
+                loss = mse_loss + derivative_weight * diff_loss
+
             else:
                 loss = mse_loss
             if training and loss.item() > 1000:
@@ -198,7 +209,7 @@ def main():
     )
     parser.add_argument(
         "--loss",
-        choices=["mse", "hybrid"],
+        choices=["mse", "hybrid", "derivative"],
         default="mse",
     )
 
@@ -208,12 +219,20 @@ def main():
         default=1.0,
     )
 
+    parser.add_argument(
+        "--derivative-weight",
+        type=float,
+        default=0.1,
+    )
+
     args = parser.parse_args()
 
     if args.epochs < 1 or args.batch_size < 1:
         parser.error("epochs and batch-size must be positive")
     if args.patience < 1:
         parser.error("patience must be positive")
+    if not np.isfinite(args.derivative_weight) or args.derivative_weight < 0:
+        parser.error("derivative-weight must be finite and non-negative")
 
     set_seed(args.seed)
     device = get_device()
@@ -236,6 +255,11 @@ def main():
         Path(args.output_dir)
         / args.modality
         / f"fold_{args.fold}"
+        / (
+            f"derivative_{args.derivative_weight:g}"
+            if args.loss == "derivative"
+            else args.loss
+        )
     )
     output_dir.mkdir(parents=True, exist_ok=True)
 
@@ -289,6 +313,7 @@ def main():
             optimizer,
             loss_type=args.loss,
             pearson_weight=args.pearson_weight,
+            derivative_weight=args.derivative_weight,
         )
 
         val_metrics = run_epoch(
