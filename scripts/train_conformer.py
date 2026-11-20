@@ -162,8 +162,6 @@ def run_epoch(
             f"{modality}_observed_mask"
         ].to(device)
 
-        y = batch["scalp"].to(device)
-        target_mask = batch["target_mask"].to(device)
 
         n_valid = int(target_mask.sum().item())
         if n_valid == 0:
@@ -214,11 +212,18 @@ def run_epoch(
                 optimizer.step()
 
         with torch.no_grad():
-            if normalization_stats is not None:
-                original_prediction = inverse_normalize(
-                    prediction.detach(),
-                    normalization_stats,
-                    modality="scalp",
+            if (
+                normalization_stats is not None
+                and normalization_stats["scalp"]["mode"] == "global"
+                and total_observations == 0
+            ):
+                sigma = normalization_stats["scalp"]["std"]
+
+                torch.testing.assert_close(
+                    original_mse,
+                    mse_loss.detach() * sigma**2,
+                    rtol=1e-4,
+                    atol=1e-4,
                 )
             else:
                 original_prediction = prediction.detach()
