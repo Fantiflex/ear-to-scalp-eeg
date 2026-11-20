@@ -196,6 +196,43 @@ def main():
     )
     model.fit(x_train, y_train)
 
+    def summarize(name, array):
+        values = np.asarray(array)
+        values = values[np.isfinite(values)]
+
+        print(f"\n{name}")
+        print("  min:", values.min())
+        print("  max:", values.max())
+        print("  std:", values.std())
+        print("  |x| p99:", np.percentile(np.abs(values), 99))
+        print("  |x| p99.9:", np.percentile(np.abs(values), 99.9))
+
+
+    summarize("TRAIN features", x_train)
+    summarize("TRAIN targets", y_train)
+    summarize("TRAIN predictions", model.predict(x_train[:2000]))
+
+    print("\nRidge coefficients")
+    print("  Maximum absolute:", np.abs(model[-1].coef_).max())
+    print("  Coefficient norm:", np.linalg.norm(model[-1].coef_))
+    print("  Minimum feature scale:", model[0].scale_.min())
+
+    for i, batch in enumerate(val_loader):
+        if i >= 3:
+            break
+
+        z = features(batch, args.lag)
+        y, valid = targets(batch)
+        predictions = model.predict(z)
+
+        summarize(f"VAL batch {i} features", z)
+        summarize(f"VAL batch {i} targets", y[valid])
+        summarize(f"VAL batch {i} predictions", predictions)
+
+        print("  Valid target fraction:", valid.mean())
+        print("  Batch subject IDs:", batch["subject_id"].unique().tolist())
+
+
     metrics = evaluate(model, val_loader, args.lag)
 
     output = Path(args.output_dir)
