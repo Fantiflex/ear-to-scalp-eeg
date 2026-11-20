@@ -22,6 +22,7 @@ from eeg_reconstruction.data.normalization import (
     normalize_batch,
 )
 from eeg_reconstruction.data.numpy_dataset import EarSAADNumpyDataset
+from eeg_reconstruction.data.rereferencing import rereference_batch
 from eeg_reconstruction.models.spatial_conformer import SpatialConformer
 from eeg_reconstruction.models.temporal_conformer import (
     ConformerConfig,
@@ -135,6 +136,7 @@ def run_epoch(
     pearson_weight=1.0,
     derivative_weight=0.1,
     normalization_stats=None,
+    rereference_mode="none",
 ):
     training = optimizer is not None
     model.train(training)
@@ -143,6 +145,11 @@ def run_epoch(
     total_observations = 0
 
     for batch in loader:
+        if modality == "in_ear":
+            batch = rereference_batch(
+                batch,
+                mode=rereference_mode,
+            )
         original_y = batch["scalp"].to(device)
         target_mask = batch["target_mask"].to(device)
 
@@ -327,7 +334,13 @@ def main():
         choices=["none", "global", "channel"],
         default="none",
     )
+    parser.add_argument(
+        "--rereference",
+        choices=["none", "car", "same_ear", "other_ear"],
+        default="none",
+    )
 
+    
     args = parser.parse_args()
 
     if args.epochs < 1 or args.batch_size < 1:
@@ -394,6 +407,7 @@ def main():
         / f"{args.model}_conformer"
         / experiment_name
         / f"norm_{args.normalization}"
+        / f"ref_{args.rereference}"
         / run_name
     )
 
@@ -428,8 +442,16 @@ def main():
     print(f"Reserved test subjects: {split.test_subjects}")
 
     train_loader, val_loader = make_loaders(split, args)
+    def transformed_train_batches():
+        for batch in train_loader:
+            if args.modality == "in_ear":
+                yield rereference_batch(batch, args.rereference)
+            else:
+                yield batch
+
+
     normalization_stats = fit_normalization(
-        train_loader,
+        transformed_train_batches(),
         mode=args.normalization,
         modalities=(args.modality, "scalp"),
     )
@@ -489,6 +511,7 @@ def main():
             pearson_weight=args.pearson_weight,
             derivative_weight=args.derivative_weight,
             normalization_stats=normalization_stats,
+            rereference_mode=args.rereference,
         )
 
         val_metrics = run_epoch(
@@ -499,6 +522,7 @@ def main():
             optimizer=None,
             loss_type="mse",
             normalization_stats=normalization_stats,
+            rereference_mode=args.rereference,
         )
 
         row = {
@@ -560,6 +584,7 @@ def main():
         "model_type": args.model,
         "parameters": sum(p.numel() for p in model.parameters()),
         "normalization": args.normalization,
+        "rereference": args.rereference,
     }
 
     with (output_dir / "summary.json").open("w") as f:
