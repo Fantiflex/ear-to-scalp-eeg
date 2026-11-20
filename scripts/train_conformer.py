@@ -211,7 +211,24 @@ def run_epoch(
                 loss.backward()
                 optimizer.step()
 
+        # Evaluate reconstruction in original EEG units.
         with torch.no_grad():
+            if normalization_stats is not None:
+                original_prediction = inverse_normalize(
+                    prediction.detach(),
+                    normalization_stats,
+                    modality="scalp",
+                )
+            else:
+                original_prediction = prediction.detach()
+
+            original_mse = masked_mse(
+                original_prediction,
+                original_y,
+                target_mask,
+            )
+
+            # Verify global normalization is correctly inverted.
             if (
                 normalization_stats is not None
                 and normalization_stats["scalp"]["mode"] == "global"
@@ -225,32 +242,7 @@ def run_epoch(
                     rtol=1e-4,
                     atol=1e-4,
                 )
-            else:
-                original_prediction = prediction.detach()
 
-            original_mse = masked_mse(
-                original_prediction,
-                original_y,
-                target_mask,
-            )
-        if (
-            normalization_stats is not None
-            and normalization_stats["scalp"]["mode"] == "global"
-            and total_observations == 0
-        ):
-            sigma = normalization_stats["scalp"]["std"]
-
-            expected_mse = mse_loss.item() * sigma**2
-            measured_mse = original_mse.item()
-
-            print("\n=== Normalization diagnostic ===")
-            print(f"Normalized MSE: {mse_loss.item():.6f}")
-            print(f"Expected original MSE: {expected_mse:.6f}")
-            print(f"Measured original MSE: {measured_mse:.6f}")
-            print(
-                "Difference:",
-                abs(expected_mse - measured_mse),
-            )
         total_squared_error += original_mse.item() * n_valid
         total_observations += n_valid
 
