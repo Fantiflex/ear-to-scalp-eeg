@@ -442,19 +442,35 @@ def main():
     print(f"Reserved test subjects: {split.test_subjects}")
 
     train_loader, val_loader = make_loaders(split, args)
-    def transformed_train_batches():
-        for batch in train_loader:
-            if args.modality == "in_ear":
-                yield rereference_batch(batch, args.rereference)
-            else:
-                yield batch
+    
+    class ReReferencedLoader:
+        """Re-iterable loader applying re-referencing on the fly."""
+
+        def __init__(self, loader, modality, mode):
+            self.loader = loader
+            self.modality = modality
+            self.mode = mode
+
+        def __iter__(self):
+            for batch in self.loader:
+                if self.modality == "in_ear":
+                    yield rereference_batch(batch, mode=self.mode)
+                else:
+                    yield batch
 
 
     normalization_stats = fit_normalization(
-        transformed_train_batches(),
+        ReReferencedLoader(
+            train_loader,
+            args.modality,
+            args.rereference,
+        ),
         mode=args.normalization,
         modalities=(args.modality, "scalp"),
     )
+
+
+
 
     (output_dir / "normalization_stats.json").write_text(
         json.dumps(normalization_stats, indent=2)
