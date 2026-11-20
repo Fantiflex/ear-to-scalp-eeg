@@ -17,6 +17,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from eeg_reconstruction.data.numpy_dataset import EarSAADNumpyDataset
+from eeg_reconstruction.models.spatial_conformer import SpatialConformer
 from eeg_reconstruction.models.temporal_conformer import (
     ConformerConfig,
     TemporalConformer,
@@ -225,7 +226,12 @@ def save_history(history, path):
 
 def main():
     parser = argparse.ArgumentParser()
-
+    parser.add_argument(
+        "--model",
+        choices=["temporal", "spatial"],
+        default="temporal",
+        help="Architecture used for EEG reconstruction.",
+    )
     parser.add_argument(
         "--modality",
         choices=["in_ear", "around_ear"],
@@ -330,6 +336,7 @@ def main():
         results_root
         / args.modality
         / f"fold_{args.fold:02d}"
+        / f"{args.model}_conformer"
         / experiment_name
         / run_name
     )
@@ -381,7 +388,12 @@ def main():
         dropout=0.1,
     )
 
-    model = TemporalConformer(config).to(device)
+    if args.model == "temporal":
+        model = TemporalConformer(config)
+    elif args.model == "spatial":
+        model = SpatialConformer(config)
+
+    model = model.to(device)
 
     optimizer = torch.optim.AdamW(
         model.parameters(),
@@ -447,6 +459,7 @@ def main():
                 {
                     "model_state_dict": model.state_dict(),
                     "model_config": vars(config),
+                    "model_type": args.model,
                     "args": vars(args),
                     "fold": args.fold,
                     "train_subjects": split.train_subjects,
@@ -473,6 +486,8 @@ def main():
         "best_epoch": int(best_epoch),
         "best_val_mse": float(best_val_mse),
         "best_val_rmse": float(best_val_mse**0.5),
+        "model_type": args.model,
+        "parameters": sum(p.numel() for p in model.parameters()),
     }
 
     with (output_dir / "summary.json").open("w") as f:

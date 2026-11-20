@@ -12,6 +12,7 @@ import torch
 from torch.utils.data import DataLoader
 
 from eeg_reconstruction.data.numpy_dataset import EarSAADNumpyDataset
+from eeg_reconstruction.models.spatial_conformer import SpatialConformer
 from eeg_reconstruction.models.temporal_conformer import (
     ConformerConfig,
     TemporalConformer,
@@ -31,7 +32,19 @@ def load_model(checkpoint_path, device, expected_fold):
         )
 
     cfg = ConformerConfig(**checkpoint["model_config"])
-    model = TemporalConformer(cfg)
+
+    model_type = checkpoint.get(
+        "model_type",
+        checkpoint.get("args", {}).get("model", "temporal"),
+    )
+
+    if model_type == "temporal":
+        model = TemporalConformer(cfg)
+    elif model_type == "spatial":
+        model = SpatialConformer(cfg)
+    else:
+        raise ValueError(f"Unknown model type: {model_type}")
+
     model.load_state_dict(checkpoint["model_state_dict"])
     model.to(device).eval()
 
