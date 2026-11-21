@@ -1,12 +1,10 @@
 # Ear-to-Scalp EEG Reconstruction
 
-Reconstructing multichannel scalp EEG from sparse **in-ear and around-ear EEG** recordings using deep learning.
-
-This project investigates architectural trade-offs in EEG reconstruction, focusing on temporal and spectral fidelity, cross-subject generalization, robustness to missing electrodes, and computational efficiency.
+Reconstructing 29-channel scalp EEG from sparse in-ear and around-ear recordings using deep learning. This project compares neural architectures in terms of reconstruction accuracy, cross-subject generalization, robustness to missing observations, and computational efficiency.
 
 ## Dataset
 
-We use the [Ear-SAAD dataset](https://zenodo.org/records/16536441), containing synchronized recordings from 15 participants:
+We use the [Ear-SAAD dataset](https://zenodo.org/), comprising synchronized EEG recordings from 15 participants.
 
 | Modality | Channels | Role |
 |---|---:|---|
@@ -14,90 +12,83 @@ We use the [Ear-SAAD dataset](https://zenodo.org/records/16536441), containing s
 | Around-ear EEG | 19 | Input |
 | Scalp EEG | 29 | Reconstruction target |
 
-The current pipeline uses the preprocessed recordings (20 Hz, 1–9 Hz band-pass), stored locally in `data/raw/preprocessedData/`.
+The preprocessed signals are sampled at 20 Hz and segmented into non-overlapping 4-second windows (80 time samples). Missing observations are zero-filled for numerical compatibility, while their original observation masks are preserved.
 
-The dataset is not tracked by Git.
+The dataset is not distributed with this repository.
+
+## Models
+
+- **Temporal Conformer:** temporal convolution and self-attention for EEG reconstruction.
+- **Masked Autoencoder:** reconstruction architecture developed as a complementary approach.
+- **CNN baseline:** convolutional reference model.
+
+All models are evaluated on the same input modalities, reconstruction targets, and subject-level splits.
+
+## Experimental Protocol
+
+We use **Leave-One-Participant-Out Cross-Validation (LOPO-CV)** across 15 participants. Each fold contains 12 training subjects, 2 validation subjects, and 1 held-out test subject.
+
+Each participant appears exactly once in the test set. Validation is used for model selection and early stopping; test data remain unseen during training.
+
+Reconstruction loss is computed using masked MSE, excluding missing scalp targets. Evaluation includes RMSE, temporal correlation, and spectral reconstruction metrics.
 
 ## Setup
 
 Requires Python 3.11.
 
 ```bash
-git clone <REPOSITORY_URL>
+git clone https://github.com/Fantiflex/ear-to-scalp-eeg.git
 cd ear-to-scalp-eeg
 
 python3.11 -m venv .venv
 source .venv/bin/activate
-
-python -m pip install -e ".[dev]"
-python -m pytest -v
+pip install -e ".[dev]"
 ```
 
-Download and extract the preprocessed Ear-SAAD dataset into `data/raw/preprocessedData/`.
+Place the preprocessed EAR-SAAD MATLAB recordings under `data/raw/preprocessedData/`.
 
-## Existing Pipeline
+## Data Preparation
 
-The repository includes:
-
-- `data/channels.py` — EEG channel definitions.
-- `data/dataset.py` — synchronized PyTorch dataset with missing-value masks.
-- `scripts/inspect_dataset.py` — dataset inspection.
-- `scripts/test_dataloader.py` — data loading validation.
-- `scripts/visualize_dataset.py` — waveform, spectral, missingness, and electrode visualizations.
-
-Inspect the dataset:
+Convert MATLAB recordings into memory-mapped NumPy arrays:
 
 ```bash
-python scripts/inspect_dataset.py
-python scripts/test_dataloader.py
-python scripts/visualize_dataset.py --subject 7 --trial 3
+python scripts/convert_mat_to_numpy.py
 ```
 
-## Models
+Converted recordings are stored in `data/processed/numpy/`, preserving trial boundaries, sampling rates, channel indices, and original missing observations. The converted data are checked against the MATLAB loader for numerical equivalence.
 
-| Model | Owner | Status |
-|---|---|---|
-| MLP | Shared | Planned |
-| ? | Hazel | In development |
-| Temporal Conformer | Fantine | In development |
+## Training
 
-Both architectures must support both input modalities and predict the same 29 scalp EEG channels.
+Train the Temporal Conformer on one LOPO-CV fold:
 
-### Model Interface
-
-All architectures must implement:
-
-```python
-model = Model(
-    input_channels=12,  # or 19
-    output_channels=29,
-)
-
-prediction = model(x, mask=None)
+```bash
+python scripts/train_conformer.py \
+  --modality in_ear \
+  --fold 1 \
+  --epochs 30 \
+  --batch-size 32
 ```
 
-Expected tensor shapes:
+Use `--modality around_ear` to reconstruct scalp EEG from around-ear electrodes.
 
-- Input: `(batch, 12 or 19, time)`
-- Optional validity mask: same shape as input
-- Output: `(batch, 29, time)`
+Model checkpoints, per-epoch training histories, and validation summaries are saved under `results/conformer/`. Generated datasets and checkpoints are excluded from version control.
 
-Each architecture should remain independent of the recording modality, except for the input channel count.
+## Validation
 
-## Experiments
+```bash
+python -m pytest -q
+python -m ruff check src scripts tests
+```
 
-All models will use the same subject-disjoint splits, preprocessing, evaluation windows, and reconstruction targets.
+## Project Structure
 
-Planned evaluations include:
+- `src/eeg_reconstruction/data/` — Data loading, channel selection, and preprocessing.
+- `src/eeg_reconstruction/models/` — Reconstruction architectures.
+- `src/eeg_reconstruction/training/` — Losses and cross-validation utilities.
+- `scripts/` — Data preparation, experiments, and dataset inspection.
+- `tests/` — Unit tests and data consistency checks.
+- `reports/figures/` — Analysis and reporting figures.
 
-1. Temporal reconstruction: RMSE and Pearson correlation.
-2. Spectral reconstruction: PSD and frequency-band errors.
-3. Spatial reconstruction: channel-wise scalp accuracy.
-4. Robustness: missing electrodes and channel dropout.
-5. Efficiency: parameter count, inference latency, and memory.
+## Research Question
 
-Missing scalp target observations will be excluded from loss and metric calculations.
-
-## Project Goal
-
-Determine which architectural inductive biases are most effective for reconstructing spatially distributed scalp EEG from sparse wearable measurements, and how the optimal architecture depends on the input modality.
+How accurately can distributed scalp EEG activity be reconstructed from sparse wearable ear-EEG recordings, and which architectural choices best support generalization across participants?
