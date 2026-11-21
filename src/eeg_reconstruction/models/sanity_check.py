@@ -9,8 +9,8 @@ from eeg_reconstruction.models.transfer import (
 
 
 def main():
-    patch_size = 128
-    T = 1024
+    patch_size = 10
+    T = 80
 
     # Stage 1
     scalp_model = ScalpMAE(
