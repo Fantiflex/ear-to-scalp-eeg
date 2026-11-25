@@ -1,0 +1,624 @@
+
+========== TRIAL 1 ==========
+
+--- in_ear ---
+ELA      | valid=99.33% | RMS=     4.604 | MAD=     4.486
+ELB      | valid=22.26% | RMS=     0.000 | MAD=     0.000
+ELC      | valid=99.22% | RMS=     3.621 | MAD=     3.542
+ELE      | valid=91.11% | RMS=     0.000 | MAD=     0.000
+ELI      | valid=99.38% | RMS=     2.566 | MAD=     2.438
+ELT      | valid=98.70% | RMS=     2.709 | MAD=     2.609
+ERA      | valid=77.85% | RMS=     8.173 | MAD=     6.380
+ERB      | valid=100.00% | RMS=     4.808 | MAD=     4.301
+ERC      | valid=97.17% | RMS=     0.000 | MAD=     0.000
+ERE      | valid=89.27% | RMS=     0.000 | MAD=     0.000
+ERI      | valid=96.83% | RMS=     2.523 | MAD=     2.393
+ERT      | valid=92.97% | RMS=     2.643 | MAD=     2.554
+
+PC1 channel contributions:
+ERB      | PC1 loading=+0.6206 | contribution=38.52%
+ELA      | PC1 loading=-0.5617 | contribution=31.55%
+ERT      | PC1 loading=+0.2492 | contribution=6.21%
+ELT      | PC1 loading=-0.2490 | contribution=6.20%
+ELC      | PC1 loading=-0.2438 | contribution=5.94%
+ELI      | PC1 loading=-0.2413 | contribution=5.82%
+ERI      | PC1 loading=+0.2399 | contribution=5.76%
+ERE      | PC1 loading=-0.0000 | contribution=0.00%
+ELE      | PC1 loading=+0.0000 | contribution=0.00%
+ERC      | PC1 loading=-0.0000 | contribution=0.00%
+
+Original effective rank: 4.931
+Leave-one-channel-out diagnostic:
+Without ELA      | rank=4.177
+Without ELC      | rank=4.120
+Without ELE      | rank=4.931
+Without ELI      | rank=4.501
+Without ELT      | rank=4.459
+Without ERB      | rank=4.205
+Without ERC      | rank=4.931
+Without ERE      | rank=4.931
+Without ERI      | rank=4.542
+Without ERT      | rank=4.488
+
+--- around_ear ---
+cEL1     | valid=98.99% | RMS=     3.402 | MAD=     3.169
+cEL2     | valid=99.83% | RMS=     3.708 | MAD=     3.586
+cEL3     | valid=99.44% | RMS=     4.437 | MAD=     4.295
+cEL4     | valid=99.50% | RMS=     3.287 | MAD=     3.211
+cEL5     | valid=99.67% | RMS=     2.509 | MAD=     2.438
+cEL6     | valid=99.61% | RMS=     2.216 | MAD=     2.114
+cEL7     | valid=99.16% | RMS=     2.256 | MAD=     2.155
+cEL8     | valid=99.56% | RMS=     2.209 | MAD=     2.105
+cEL9     | valid=99.01% | RMS=     2.235 | MAD=     2.096
+cER1     | valid=86.43% | RMS=     4.154 | MAD=     4.112
+cER2     | valid=100.00% | RMS=     3.379 | MAD=     3.241
+cER3     | valid=99.11% | RMS=     3.459 | MAD=     3.300
+cER4     | valid=99.55% | RMS=     3.017 | MAD=     2.861
+cER5     | valid=99.67% | RMS=     2.573 | MAD=     2.482
+cER6     | valid=99.83% | RMS=     1.986 | MAD=     1.905
+cER7     | valid=98.33% | RMS=     2.333 | MAD=     2.271
+cER8     | valid=99.61% | RMS=     2.730 | MAD=     2.663
+cER9     | valid=99.17% | RMS=     2.329 | MAD=     2.231
+cER10    | valid=99.33% | RMS=     2.405 | MAD=     2.284
+
+PC1 channel contributions:
+cEL3     | PC1 loading=-0.3766 | contribution=14.18%
+cEL4     | PC1 loading=-0.3104 | contribution=9.64%
+cEL2     | PC1 loading=-0.3049 | contribution=9.29%
+cER3     | PC1 loading=+0.2978 | contribution=8.87%
+cER2     | PC1 loading=+0.2792 | contribution=7.80%
+cER1     | PC1 loading=+0.2725 | contribution=7.42%
+cER4     | PC1 loading=+0.2582 | contribution=6.66%
+cEL1     | PC1 loading=-0.2555 | contribution=6.53%
+cEL5     | PC1 loading=-0.2310 | contribution=5.33%
+cER5     | PC1 loading=+0.1959 | contribution=3.84%
+cER10    | PC1 loading=+0.1911 | contribution=3.65%
+cEL6     | PC1 loading=-0.1731 | contribution=3.00%
+cER9     | PC1 loading=+0.1669 | contribution=2.78%
+cER8     | PC1 loading=+0.1442 | contribution=2.08%
+cER6     | PC1 loading=+0.1434 | contribution=2.06%
+cEL7     | PC1 loading=-0.1388 | contribution=1.93%
+cER7     | PC1 loading=+0.1332 | contribution=1.77%
+cEL9     | PC1 loading=-0.1287 | contribution=1.66%
+cEL8     | PC1 loading=-0.1227 | contribution=1.51%
+
+Original effective rank: 7.836
+Leave-one-channel-out diagnostic:
+Without cEL1     | rank=7.393
+Without cEL2     | rank=7.412
+Without cEL3     | rank=7.427
+Without cEL4     | rank=7.728
+Without cEL5     | rank=7.827
+Without cEL6     | rank=7.795
+Without cEL7     | rank=7.695
+Without cEL8     | rank=7.688
+Without cEL9     | rank=7.625
+Without cER1     | rank=7.171
+Without cER2     | rank=7.544
+Without cER3     | rank=7.723
+Without cER4     | rank=7.758
+Without cER5     | rank=7.583
+Without cER6     | rank=7.742
+Without cER7     | rank=7.584
+Without cER8     | rank=7.482
+Without cER9     | rank=7.772
+Without cER10    | rank=7.767
+
+========== TRIAL 2 ==========
+
+--- in_ear ---
+ELA      | valid=99.50% | RMS=     4.363 | MAD=     4.237
+ELB      | valid=49.62% | RMS=     0.000 | MAD=     0.000
+ELC      | valid=100.00% | RMS=     3.556 | MAD=     3.512
+ELE      | valid=95.52% | RMS=     0.000 | MAD=     0.000
+ELI      | valid=98.66% | RMS=     2.480 | MAD=     2.416
+ELT      | valid=96.69% | RMS=     2.653 | MAD=     2.586
+ERA      | valid=94.12% | RMS=     7.492 | MAD=     7.110
+ERB      | valid=98.54% | RMS=     4.329 | MAD=     4.144
+ERC      | valid=35.37% | RMS=     0.000 | MAD=     0.000
+ERE      | valid=31.25% | RMS=     0.000 | MAD=     0.000
+ERI      | valid=97.99% | RMS=     2.502 | MAD=     2.455
+ERT      | valid=99.83% | RMS=     2.639 | MAD=     2.559
+
+PC1 channel contributions:
+ERA      | PC1 loading=+0.9581 | contribution=91.80%
+ELA      | PC1 loading=-0.1860 | contribution=3.46%
+ELI      | PC1 loading=-0.0989 | contribution=0.98%
+ERB      | PC1 loading=+0.0952 | contribution=0.91%
+ELT      | PC1 loading=-0.0904 | contribution=0.82%
+ERI      | PC1 loading=+0.0892 | contribution=0.80%
+ERT      | PC1 loading=+0.0875 | contribution=0.77%
+ELC      | PC1 loading=-0.0687 | contribution=0.47%
+ELE      | PC1 loading=-0.0000 | contribution=0.00%
+
+Original effective rank: 4.950
+Leave-one-channel-out diagnostic:
+Without ELA      | rank=4.160
+Without ELC      | rank=4.220
+Without ELE      | rank=4.950
+Without ELI      | rank=4.594
+Without ELT      | rank=4.526
+Without ERA      | rank=5.064
+Without ERB      | rank=4.101
+Without ERI      | rank=4.584
+Without ERT      | rank=4.544
+
+--- around_ear ---
+cEL1     | valid=99.28% | RMS=     2.892 | MAD=     2.774
+cEL2     | valid=100.00% | RMS=     3.562 | MAD=     3.471
+cEL3     | valid=100.00% | RMS=     4.118 | MAD=     3.968
+cEL4     | valid=99.83% | RMS=     2.979 | MAD=     2.930
+cEL5     | valid=100.00% | RMS=     2.277 | MAD=     2.195
+cEL6     | valid=100.00% | RMS=     2.020 | MAD=     1.945
+cEL7     | valid=100.00% | RMS=     2.123 | MAD=     1.995
+cEL8     | valid=100.00% | RMS=     2.034 | MAD=     1.929
+cEL9     | valid=99.67% | RMS=     1.970 | MAD=     1.885
+cER1     | valid=100.00% | RMS=     3.885 | MAD=     3.747
+cER2     | valid=100.00% | RMS=     3.067 | MAD=     2.988
+cER3     | valid=99.05% | RMS=     3.250 | MAD=     3.125
+cER4     | valid=99.83% | RMS=     2.774 | MAD=     2.637
+cER5     | valid=99.55% | RMS=     2.403 | MAD=     2.367
+cER6     | valid=99.62% | RMS=     1.820 | MAD=     1.763
+cER7     | valid=98.94% | RMS=     2.158 | MAD=     2.074
+cER8     | valid=98.93% | RMS=     2.501 | MAD=     2.423
+cER9     | valid=99.44% | RMS=     2.058 | MAD=     1.966
+cER10    | valid=99.50% | RMS=     2.090 | MAD=     1.975
+
+PC1 channel contributions:
+cEL3     | PC1 loading=-0.3639 | contribution=13.25%
+cER3     | PC1 loading=+0.3097 | contribution=9.59%
+cEL4     | PC1 loading=-0.3066 | contribution=9.40%
+cER1     | PC1 loading=+0.3027 | contribution=9.16%
+cER2     | PC1 loading=+0.2842 | contribution=8.08%
+cEL2     | PC1 loading=-0.2836 | contribution=8.04%
+cER4     | PC1 loading=+0.2709 | contribution=7.34%
+cEL5     | PC1 loading=-0.2341 | contribution=5.48%
+cEL1     | PC1 loading=-0.2282 | contribution=5.21%
+cER5     | PC1 loading=+0.2000 | contribution=4.00%
+cEL6     | PC1 loading=-0.1817 | contribution=3.30%
+cER10    | PC1 loading=+0.1807 | contribution=3.27%
+cER9     | PC1 loading=+0.1587 | contribution=2.52%
+cEL7     | PC1 loading=-0.1509 | contribution=2.28%
+cER6     | PC1 loading=+0.1468 | contribution=2.16%
+cER8     | PC1 loading=+0.1407 | contribution=1.98%
+cER7     | PC1 loading=+0.1318 | contribution=1.74%
+cEL8     | PC1 loading=-0.1318 | contribution=1.74%
+cEL9     | PC1 loading=-0.1218 | contribution=1.48%
+
+Original effective rank: 8.168
+Leave-one-channel-out diagnostic:
+Without cEL1     | rank=7.721
+Without cEL2     | rank=7.578
+Without cEL3     | rank=7.654
+Without cEL4     | rank=8.021
+Without cEL5     | rank=8.143
+Without cEL6     | rank=8.141
+Without cEL7     | rank=8.021
+Without cEL8     | rank=8.021
+Without cEL9     | rank=7.992
+Without cER1     | rank=7.552
+Without cER2     | rank=7.823
+Without cER3     | rank=8.012
+Without cER4     | rank=8.104
+Without cER5     | rank=7.891
+Without cER6     | rank=8.059
+Without cER7     | rank=7.904
+Without cER8     | rank=7.787
+Without cER9     | rank=8.099
+Without cER10    | rank=8.096
+
+========== TRIAL 3 ==========
+
+--- in_ear ---
+ELA      | valid=98.54% | RMS=     4.587 | MAD=     4.277
+ELB      | valid=73.69% | RMS=     0.087 | MAD=     0.064
+ELC      | valid=99.17% | RMS=     3.556 | MAD=     3.372
+ELE      | valid=96.76% | RMS=     0.000 | MAD=     0.000
+ELI      | valid=94.18% | RMS=     2.404 | MAD=     2.261
+ELT      | valid=98.77% | RMS=     2.668 | MAD=     2.501
+ERA      | valid=100.00% | RMS=    12.337 | MAD=     9.357
+ERB      | valid=94.61% | RMS=     5.265 | MAD=     4.676
+ERC      | valid=54.22% | RMS=     0.000 | MAD=     0.000
+ERE      | valid=45.51% | RMS=     0.000 | MAD=     0.000
+ERI      | valid=97.70% | RMS=     2.597 | MAD=     2.438
+ERT      | valid=97.65% | RMS=     2.652 | MAD=     2.508
+
+PC1 channel contributions:
+ERA      | PC1 loading=+0.9874 | contribution=97.49%
+ERB      | PC1 loading=+0.1037 | contribution=1.08%
+ELA      | PC1 loading=-0.0728 | contribution=0.53%
+ELI      | PC1 loading=-0.0584 | contribution=0.34%
+ELT      | PC1 loading=-0.0575 | contribution=0.33%
+ELC      | PC1 loading=-0.0478 | contribution=0.23%
+ERI      | PC1 loading=-0.0012 | contribution=0.00%
+ERT      | PC1 loading=+0.0001 | contribution=0.00%
+ELE      | PC1 loading=+0.0000 | contribution=0.00%
+
+Original effective rank: 3.338
+Leave-one-channel-out diagnostic:
+Without ELA      | rank=2.765
+Without ELC      | rank=2.923
+Without ELE      | rank=3.338
+Without ELI      | rank=3.141
+Without ELT      | rank=3.102
+Without ERA      | rank=4.796
+Without ERB      | rank=2.665
+Without ERI      | rank=3.099
+Without ERT      | rank=3.094
+
+--- around_ear ---
+cEL1     | valid=98.78% | RMS=     3.156 | MAD=     3.052
+cEL2     | valid=100.00% | RMS=     5.198 | MAD=     4.948
+cEL3     | valid=99.78% | RMS=     4.658 | MAD=     4.506
+cEL4     | valid=99.72% | RMS=     3.336 | MAD=     3.217
+cEL5     | valid=100.00% | RMS=     2.697 | MAD=     2.611
+cEL6     | valid=98.56% | RMS=     2.333 | MAD=     2.244
+cEL7     | valid=99.83% | RMS=     2.274 | MAD=     2.168
+cEL8     | valid=99.38% | RMS=     2.201 | MAD=     2.092
+cEL9     | valid=100.00% | RMS=     2.131 | MAD=     2.010
+cER1     | valid=99.72% | RMS=     3.800 | MAD=     3.621
+cER2     | valid=99.78% | RMS=     3.786 | MAD=     3.641
+cER3     | valid=99.44% | RMS=     3.547 | MAD=     3.424
+cER4     | valid=99.22% | RMS=     2.888 | MAD=     2.726
+cER5     | valid=99.17% | RMS=     2.441 | MAD=     2.331
+cER6     | valid=100.00% | RMS=     1.919 | MAD=     1.831
+cER7     | valid=99.28% | RMS=     2.219 | MAD=     2.104
+cER8     | valid=98.49% | RMS=     2.551 | MAD=     2.467
+cER9     | valid=99.83% | RMS=     2.226 | MAD=     2.106
+cER10    | valid=99.62% | RMS=     2.260 | MAD=     2.131
+
+PC1 channel contributions:
+cEL2     | PC1 loading=-0.3882 | contribution=15.07%
+cEL3     | PC1 loading=-0.3691 | contribution=13.63%
+cEL4     | PC1 loading=-0.3127 | contribution=9.78%
+cER3     | PC1 loading=+0.2899 | contribution=8.40%
+cER2     | PC1 loading=+0.2763 | contribution=7.64%
+cER1     | PC1 loading=+0.2634 | contribution=6.94%
+cER4     | PC1 loading=+0.2464 | contribution=6.07%
+cEL5     | PC1 loading=-0.2387 | contribution=5.70%
+cEL1     | PC1 loading=-0.2220 | contribution=4.93%
+cER5     | PC1 loading=+0.1812 | contribution=3.28%
+cEL6     | PC1 loading=-0.1784 | contribution=3.18%
+cER10    | PC1 loading=+0.1783 | contribution=3.18%
+cER9     | PC1 loading=+0.1600 | contribution=2.56%
+cER6     | PC1 loading=+0.1380 | contribution=1.90%
+cER8     | PC1 loading=+0.1373 | contribution=1.89%
+cEL7     | PC1 loading=-0.1312 | contribution=1.72%
+cER7     | PC1 loading=+0.1295 | contribution=1.68%
+cEL8     | PC1 loading=-0.1112 | contribution=1.24%
+cEL9     | PC1 loading=-0.1109 | contribution=1.23%
+
+Original effective rank: 8.009
+Leave-one-channel-out diagnostic:
+Without cEL1     | rank=7.552
+Without cEL2     | rank=7.404
+Without cEL3     | rank=7.483
+Without cEL4     | rank=7.884
+Without cEL5     | rank=7.978
+Without cEL6     | rank=7.967
+Without cEL7     | rank=7.874
+Without cEL8     | rank=7.869
+Without cEL9     | rank=7.844
+Without cER1     | rank=7.434
+Without cER2     | rank=7.505
+Without cER3     | rank=7.762
+Without cER4     | rank=7.894
+Without cER5     | rank=7.764
+Without cER6     | rank=7.912
+Without cER7     | rank=7.785
+Without cER8     | rank=7.697
+Without cER9     | rank=7.949
+Without cER10    | rank=7.947
+
+========== TRIAL 4 ==========
+
+--- in_ear ---
+ELA      | valid=100.00% | RMS=    61.160 | MAD=    39.962
+ELB      | valid=100.00% | RMS=  1899.899 | MAD=  1222.371
+ELC      | valid=100.00% | RMS=    60.898 | MAD=    39.555
+ELE      | valid=58.19% | RMS=     0.000 | MAD=     0.000
+ELI      | valid=100.00% | RMS=    60.973 | MAD=    39.417
+ELT      | valid=100.00% | RMS=    60.978 | MAD=    39.823
+ERA      | valid=94.63% | RMS=    67.221 | MAD=    50.465
+ERB      | valid=100.00% | RMS=    61.123 | MAD=    39.496
+ERC      | valid=65.28% | RMS=     0.000 | MAD=     0.000
+ERE      | valid=52.35% | RMS=     0.000 | MAD=     0.000
+ERI      | valid=100.00% | RMS=    60.997 | MAD=    39.390
+ERT      | valid=100.00% | RMS=    60.940 | MAD=    39.223
+
+PC1 channel contributions:
+ELB      | PC1 loading=+0.9959 | contribution=99.19%
+ELA      | PC1 loading=-0.0319 | contribution=0.10%
+ERI      | PC1 loading=-0.0319 | contribution=0.10%
+ELI      | PC1 loading=-0.0319 | contribution=0.10%
+ERB      | PC1 loading=-0.0319 | contribution=0.10%
+ELT      | PC1 loading=-0.0319 | contribution=0.10%
+ERT      | PC1 loading=-0.0319 | contribution=0.10%
+ELC      | PC1 loading=-0.0318 | contribution=0.10%
+ERA      | PC1 loading=-0.0313 | contribution=0.10%
+
+Original effective rank: 1.003
+Leave-one-channel-out diagnostic:
+Without ELA      | rank=1.003
+Without ELB      | rank=1.161
+Without ELC      | rank=1.003
+Without ELI      | rank=1.003
+Without ELT      | rank=1.003
+Without ERA      | rank=1.000
+Without ERB      | rank=1.003
+Without ERI      | rank=1.003
+Without ERT      | rank=1.003
+
+--- around_ear ---
+cEL1     | valid=100.00% | RMS=    63.928 | MAD=    43.907
+cEL2     | valid=100.00% | RMS=    64.129 | MAD=    44.722
+cEL3     | valid=100.00% | RMS=    64.108 | MAD=    44.772
+cEL4     | valid=100.00% | RMS=    64.054 | MAD=    44.132
+cEL5     | valid=100.00% | RMS=    63.980 | MAD=    44.201
+cEL6     | valid=100.00% | RMS=    63.950 | MAD=    44.191
+cEL7     | valid=100.00% | RMS=    63.900 | MAD=    44.104
+cEL8     | valid=100.00% | RMS=    63.917 | MAD=    44.039
+cEL9     | valid=100.00% | RMS=    63.889 | MAD=    43.856
+cER1     | valid=100.00% | RMS=    63.923 | MAD=    43.876
+cER2     | valid=100.00% | RMS=    63.899 | MAD=    44.223
+cER3     | valid=100.00% | RMS=    63.902 | MAD=    43.981
+cER4     | valid=100.00% | RMS=    63.980 | MAD=    43.776
+cER5     | valid=100.00% | RMS=    63.834 | MAD=    44.004
+cER6     | valid=100.00% | RMS=    63.866 | MAD=    43.822
+cER7     | valid=100.00% | RMS=    63.847 | MAD=    43.709
+cER8     | valid=100.00% | RMS=    63.823 | MAD=    43.807
+cER9     | valid=100.00% | RMS=    63.803 | MAD=    43.544
+cER10    | valid=100.00% | RMS=    63.878 | MAD=    43.509
+
+PC1 channel contributions:
+cEL4     | PC1 loading=-0.2299 | contribution=5.28%
+cEL5     | PC1 loading=-0.2297 | contribution=5.28%
+cEL3     | PC1 loading=-0.2297 | contribution=5.28%
+cEL6     | PC1 loading=-0.2297 | contribution=5.27%
+cER4     | PC1 loading=-0.2297 | contribution=5.27%
+cEL8     | PC1 loading=-0.2296 | contribution=5.27%
+cEL7     | PC1 loading=-0.2295 | contribution=5.27%
+cEL9     | PC1 loading=-0.2294 | contribution=5.26%
+cEL1     | PC1 loading=-0.2294 | contribution=5.26%
+cER6     | PC1 loading=-0.2294 | contribution=5.26%
+cER10    | PC1 loading=-0.2294 | contribution=5.26%
+cER1     | PC1 loading=-0.2293 | contribution=5.26%
+cER7     | PC1 loading=-0.2293 | contribution=5.26%
+cER5     | PC1 loading=-0.2292 | contribution=5.25%
+cER3     | PC1 loading=-0.2292 | contribution=5.25%
+cER8     | PC1 loading=-0.2292 | contribution=5.25%
+cEL2     | PC1 loading=-0.2291 | contribution=5.25%
+cER9     | PC1 loading=-0.2291 | contribution=5.25%
+cER2     | PC1 loading=-0.2291 | contribution=5.25%
+
+Original effective rank: 1.024
+Leave-one-channel-out diagnostic:
+Without cEL1     | rank=1.023
+Without cEL2     | rank=1.019
+Without cEL3     | rank=1.022
+Without cEL4     | rank=1.023
+Without cEL5     | rank=1.024
+Without cEL6     | rank=1.024
+Without cEL7     | rank=1.024
+Without cEL8     | rank=1.024
+Without cEL9     | rank=1.024
+Without cER1     | rank=1.023
+Without cER2     | rank=1.022
+Without cER3     | rank=1.023
+Without cER4     | rank=1.024
+Without cER5     | rank=1.024
+Without cER6     | rank=1.024
+Without cER7     | rank=1.024
+Without cER8     | rank=1.024
+Without cER9     | rank=1.024
+Without cER10    | rank=1.024
+
+========== TRIAL 5 ==========
+
+--- in_ear ---
+ELA      | valid=100.00% | RMS=   206.861 | MAD=   173.338
+ELB      | valid=100.00% | RMS=  6485.767 | MAD=  5422.578
+ELC      | valid=100.00% | RMS=   207.023 | MAD=   174.086
+ELE      | valid=98.34% | RMS=     0.000 | MAD=     0.000
+ELI      | valid=99.83% | RMS=   206.661 | MAD=   173.697
+ELT      | valid=99.83% | RMS=   206.677 | MAD=   173.645
+ERA      | valid=99.83% | RMS=   207.501 | MAD=   173.627
+ERB      | valid=99.38% | RMS=   205.303 | MAD=   172.763
+ERC      | valid=71.92% | RMS=     0.000 | MAD=     0.000
+ERE      | valid=71.74% | RMS=     0.000 | MAD=     0.000
+ERI      | valid=100.00% | RMS=   207.274 | MAD=   174.162
+ERT      | valid=100.00% | RMS=   207.182 | MAD=   174.042
+
+PC1 channel contributions:
+ELB      | PC1 loading=+0.9960 | contribution=99.20%
+ERI      | PC1 loading=-0.0317 | contribution=0.10%
+ELT      | PC1 loading=-0.0317 | contribution=0.10%
+ELI      | PC1 loading=-0.0317 | contribution=0.10%
+ERT      | PC1 loading=-0.0317 | contribution=0.10%
+ERA      | PC1 loading=-0.0317 | contribution=0.10%
+ELC      | PC1 loading=-0.0317 | contribution=0.10%
+ELA      | PC1 loading=-0.0317 | contribution=0.10%
+ERB      | PC1 loading=-0.0317 | contribution=0.10%
+ELE      | PC1 loading=-0.0000 | contribution=0.00%
+
+Original effective rank: 1.001
+Leave-one-channel-out diagnostic:
+Without ELA      | rank=1.001
+Without ELB      | rank=1.007
+Without ELC      | rank=1.001
+Without ELE      | rank=1.001
+Without ELI      | rank=1.001
+Without ELT      | rank=1.001
+Without ERA      | rank=1.001
+Without ERB      | rank=1.001
+Without ERI      | rank=1.001
+Without ERT      | rank=1.001
+
+--- around_ear ---
+cEL1     | valid=99.83% | RMS=   216.159 | MAD=   179.796
+cEL2     | valid=99.83% | RMS=   216.116 | MAD=   180.114
+cEL3     | valid=99.55% | RMS=   215.491 | MAD=   179.949
+cEL4     | valid=100.00% | RMS=   216.822 | MAD=   180.172
+cEL5     | valid=99.83% | RMS=   216.238 | MAD=   180.305
+cEL6     | valid=100.00% | RMS=   216.667 | MAD=   180.415
+cEL7     | valid=100.00% | RMS=   216.740 | MAD=   179.915
+cEL8     | valid=99.83% | RMS=   216.209 | MAD=   180.153
+cEL9     | valid=99.78% | RMS=   216.093 | MAD=   180.258
+cER1     | valid=99.83% | RMS=   215.866 | MAD=   180.538
+cER2     | valid=100.00% | RMS=   216.758 | MAD=   180.606
+cER3     | valid=99.83% | RMS=   215.897 | MAD=   180.195
+cER4     | valid=100.00% | RMS=   216.768 | MAD=   180.104
+cER5     | valid=99.83% | RMS=   216.193 | MAD=   180.458
+cER6     | valid=100.00% | RMS=   216.666 | MAD=   180.597
+cER7     | valid=100.00% | RMS=   216.946 | MAD=   180.525
+cER8     | valid=99.55% | RMS=   215.086 | MAD=   179.718
+cER9     | valid=100.00% | RMS=   216.661 | MAD=   180.499
+cER10    | valid=100.00% | RMS=   216.577 | MAD=   180.586
+
+PC1 channel contributions:
+cER7     | PC1 loading=-0.2297 | contribution=5.28%
+cEL3     | PC1 loading=-0.2296 | contribution=5.27%
+cEL5     | PC1 loading=-0.2296 | contribution=5.27%
+cEL8     | PC1 loading=-0.2295 | contribution=5.27%
+cEL4     | PC1 loading=-0.2295 | contribution=5.27%
+cEL9     | PC1 loading=-0.2295 | contribution=5.27%
+cER5     | PC1 loading=-0.2295 | contribution=5.27%
+cER4     | PC1 loading=-0.2295 | contribution=5.27%
+cEL1     | PC1 loading=-0.2295 | contribution=5.27%
+cEL7     | PC1 loading=-0.2295 | contribution=5.26%
+cER2     | PC1 loading=-0.2294 | contribution=5.26%
+cER6     | PC1 loading=-0.2294 | contribution=5.26%
+cEL6     | PC1 loading=-0.2294 | contribution=5.26%
+cER9     | PC1 loading=-0.2294 | contribution=5.26%
+cER10    | PC1 loading=-0.2293 | contribution=5.26%
+cEL2     | PC1 loading=-0.2292 | contribution=5.25%
+cER8     | PC1 loading=-0.2292 | contribution=5.25%
+cER3     | PC1 loading=-0.2292 | contribution=5.25%
+cER1     | PC1 loading=-0.2292 | contribution=5.25%
+
+Original effective rank: 1.004
+Leave-one-channel-out diagnostic:
+Without cEL1     | rank=1.004
+Without cEL2     | rank=1.003
+Without cEL3     | rank=1.003
+Without cEL4     | rank=1.004
+Without cEL5     | rank=1.004
+Without cEL6     | rank=1.004
+Without cEL7     | rank=1.004
+Without cEL8     | rank=1.004
+Without cEL9     | rank=1.004
+Without cER1     | rank=1.004
+Without cER2     | rank=1.003
+Without cER3     | rank=1.004
+Without cER4     | rank=1.004
+Without cER5     | rank=1.004
+Without cER6     | rank=1.004
+Without cER7     | rank=1.004
+Without cER8     | rank=1.004
+Without cER9     | rank=1.004
+Without cER10    | rank=1.004
+
+========== TRIAL 6 ==========
+
+--- in_ear ---
+ELA      | valid=100.00% | RMS=   157.198 | MAD=   130.286
+ELB      | valid=98.06% | RMS=  4806.875 | MAD=  4000.903
+ELC      | valid=99.12% | RMS=   155.416 | MAD=   129.110
+ELE      | valid=99.33% | RMS=     0.000 | MAD=     0.000
+ELI      | valid=90.33% | RMS=   145.786 | MAD=   123.142
+ELT      | valid=86.51% | RMS=   142.764 | MAD=   121.352
+ERA      | valid=98.93% | RMS=   157.336 | MAD=   129.565
+ERB      | valid=100.00% | RMS=   157.303 | MAD=   130.171
+ERC      | valid=56.70% | RMS=     0.000 | MAD=     0.000
+ERE      | valid=55.01% | RMS=     0.000 | MAD=     0.000
+ERI      | valid=99.83% | RMS=   157.151 | MAD=   129.744
+ERT      | valid=100.00% | RMS=   157.461 | MAD=   130.115
+
+PC1 channel contributions:
+ELB      | PC1 loading=+0.9959 | contribution=99.19%
+ERI      | PC1 loading=-0.0319 | contribution=0.10%
+ERT      | PC1 loading=-0.0319 | contribution=0.10%
+ELC      | PC1 loading=-0.0319 | contribution=0.10%
+ELT      | PC1 loading=-0.0319 | contribution=0.10%
+ELI      | PC1 loading=-0.0319 | contribution=0.10%
+ERB      | PC1 loading=-0.0319 | contribution=0.10%
+ELA      | PC1 loading=-0.0318 | contribution=0.10%
+ERA      | PC1 loading=-0.0318 | contribution=0.10%
+ELE      | PC1 loading=+0.0000 | contribution=0.00%
+
+Original effective rank: 1.000
+Leave-one-channel-out diagnostic:
+Without ELA      | rank=1.000
+Without ELB      | rank=1.020
+Without ELC      | rank=1.000
+Without ELE      | rank=1.000
+Without ELI      | rank=1.000
+Without ELT      | rank=1.000
+Without ERA      | rank=1.000
+Without ERB      | rank=1.000
+Without ERI      | rank=1.000
+Without ERT      | rank=1.000
+
+--- around_ear ---
+cEL1     | valid=100.00% | RMS=   147.419 | MAD=   122.141
+cEL2     | valid=100.00% | RMS=   147.730 | MAD=   122.616
+cEL3     | valid=100.00% | RMS=   147.410 | MAD=   122.698
+cEL4     | valid=100.00% | RMS=   147.402 | MAD=   122.747
+cEL5     | valid=100.00% | RMS=   147.516 | MAD=   122.882
+cEL6     | valid=96.72% | RMS=   142.820 | MAD=   119.451
+cEL7     | valid=100.00% | RMS=   147.399 | MAD=   122.690
+cEL8     | valid=100.00% | RMS=   147.452 | MAD=   122.954
+cEL9     | valid=100.00% | RMS=   147.401 | MAD=   122.017
+cER1     | valid=100.00% | RMS=   147.327 | MAD=   122.502
+cER2     | valid=100.00% | RMS=   147.465 | MAD=   122.990
+cER3     | valid=100.00% | RMS=   147.291 | MAD=   122.770
+cER4     | valid=100.00% | RMS=   147.517 | MAD=   122.947
+cER5     | valid=100.00% | RMS=   147.539 | MAD=   122.581
+cER6     | valid=100.00% | RMS=   147.414 | MAD=   122.844
+cER7     | valid=100.00% | RMS=   147.498 | MAD=   122.748
+cER8     | valid=100.00% | RMS=   147.254 | MAD=   122.484
+cER9     | valid=100.00% | RMS=   147.410 | MAD=   122.374
+cER10    | valid=100.00% | RMS=   147.364 | MAD=   122.673
+
+PC1 channel contributions:
+cEL2     | PC1 loading=-0.2297 | contribution=5.27%
+cER5     | PC1 loading=-0.2296 | contribution=5.27%
+cER4     | PC1 loading=-0.2296 | contribution=5.27%
+cEL5     | PC1 loading=-0.2296 | contribution=5.27%
+cER7     | PC1 loading=-0.2296 | contribution=5.27%
+cEL8     | PC1 loading=-0.2295 | contribution=5.27%
+cER6     | PC1 loading=-0.2295 | contribution=5.27%
+cER9     | PC1 loading=-0.2294 | contribution=5.26%
+cEL9     | PC1 loading=-0.2294 | contribution=5.26%
+cEL7     | PC1 loading=-0.2294 | contribution=5.26%
+cER2     | PC1 loading=-0.2294 | contribution=5.26%
+cEL1     | PC1 loading=-0.2294 | contribution=5.26%
+cEL6     | PC1 loading=-0.2294 | contribution=5.26%
+cEL4     | PC1 loading=-0.2294 | contribution=5.26%
+cER10    | PC1 loading=-0.2294 | contribution=5.26%
+cER1     | PC1 loading=-0.2292 | contribution=5.25%
+cEL3     | PC1 loading=-0.2292 | contribution=5.25%
+cER8     | PC1 loading=-0.2292 | contribution=5.25%
+cER3     | PC1 loading=-0.2291 | contribution=5.25%
+
+Original effective rank: 1.008
+Leave-one-channel-out diagnostic:
+Without cEL1     | rank=1.008
+Without cEL2     | rank=1.006
+Without cEL3     | rank=1.007
+Without cEL4     | rank=1.008
+Without cEL5     | rank=1.008
+Without cEL6     | rank=1.008
+Without cEL7     | rank=1.008
+Without cEL8     | rank=1.008
+Without cEL9     | rank=1.008
+Without cER1     | rank=1.008
+Without cER2     | rank=1.007
+Without cER3     | rank=1.008
+Without cER4     | rank=1.008
+Without cER5     | rank=1.008
+Without cER6     | rank=1.008
+Without cER7     | rank=1.008
+Without cER8     | rank=1.008
+Without cER9     | rank=1.008
+Without cER10    | rank=1.008

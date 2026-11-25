@@ -1,0 +1,75 @@
+
+========== TRIAL 1 ==========
+Common samples: 6840
+P0 Original                  | PC1=  37.55% | rank= 4.971 | RMS=    2.8974
+P1 Without ELB               | PC1=  37.55% | rank= 4.971 | RMS=    2.8974
+Retained channels: ['ELA', 'ELC', 'ELI', 'ELT', 'ERB', 'ERI', 'ERT']
+P2 Without ELB/flatlines     | PC1=  37.55% | rank= 4.971 | RMS=    3.4631
+P3 CAR                       | PC1=  46.28% | rank= 4.068 | RMS=    3.1156
+P4 Median reference          | PC1=  42.92% | rank= 4.706 | RMS=    3.2507
+P5 Around-ear reference      | PC1=  37.55% | rank= 4.843 | RMS=    3.4927
+
+========== TRIAL 2 ==========
+Common samples: 9619
+P0 Original                  | PC1=  44.50% | rank= 4.947 | RMS=    3.8634
+P1 Without ELB               | PC1=  44.50% | rank= 4.947 | RMS=    3.8634
+Retained channels: ['ELA', 'ELC', 'ELI', 'ELT', 'ERA', 'ERB', 'ERI', 'ERT']
+P2 Without ELB/flatlines     | PC1=  44.50% | rank= 4.947 | RMS=    4.0977
+P3 CAR                       | PC1=  48.74% | rank= 4.207 | RMS=    3.8028
+P4 Median reference          | PC1=  47.88% | rank= 4.564 | RMS=    3.9082
+P5 Around-ear reference      | PC1=  45.12% | rank= 4.816 | RMS=    4.1202
+
+========== TRIAL 3 ==========
+Common samples: 9111
+P0 Original                  | PC1=  64.91% | rank= 3.334 | RMS=    5.1273
+P1 Without ELB               | PC1=  64.91% | rank= 3.334 | RMS=    5.1273
+Retained channels: ['ELA', 'ELC', 'ELI', 'ELT', 'ERA', 'ERB', 'ERI', 'ERT']
+P2 Without ELB/flatlines     | PC1=  64.91% | rank= 3.334 | RMS=    5.4383
+P3 CAR                       | PC1=  67.40% | rank= 2.950 | RMS=    5.1116
+P4 Median reference          | PC1=  67.74% | rank= 3.058 | RMS=    5.3225
+P5 Around-ear reference      | PC1=  65.02% | rank= 3.299 | RMS=    5.5477
+
+========== TRIAL 4 ==========
+Common samples: 11356
+P0 Original                  | PC1=  99.97% | rank= 1.003 | RMS=  637.1487
+P1 Without ELB               | PC1=  96.89% | rank= 1.161 | RMS=   61.8753
+Retained channels: ['ELA', 'ELC', 'ELI', 'ELT', 'ERA', 'ERB', 'ERI', 'ERT']
+P2 Without ELB/flatlines     | PC1=  96.89% | rank= 1.161 | RMS=   61.8753
+P3 CAR                       | PC1=  92.96% | rank= 1.424 | RMS=   10.9107
+P4 Median reference          | PC1=  93.16% | rank= 1.427 | RMS=   11.5287
+P5 Around-ear reference      | PC1=  84.78% | rank= 1.618 | RMS=   27.7068
+
+Reference contamination test:
+ELB/common slope: -27.4272
+ELB/common Pearson: -0.919139
+RMS(ELB + 31*common): 783.6881
+
+========== TRIAL 5 ==========
+Common samples: 11680
+P0 Original                  | PC1=  99.99% | rank= 1.001 | RMS= 2041.9594
+P1 Without ELB               | PC1=  99.93% | rank= 1.007 | RMS=  193.6910
+Retained channels: ['ELA', 'ELC', 'ELI', 'ELT', 'ERA', 'ERB', 'ERI', 'ERT']
+P2 Without ELB/flatlines     | PC1=  99.93% | rank= 1.007 | RMS=  205.4403
+P3 CAR                       | PC1=  69.13% | rank= 2.820 | RMS=    5.5483
+P4 Median reference          | PC1=  69.32% | rank= 2.937 | RMS=    5.7969
+P5 Around-ear reference      | PC1=  99.49% | rank= 1.038 | RMS=   77.5126
+
+Reference contamination test:
+ELB/common slope: -27.8963
+ELB/common Pearson: -0.930210
+RMS(ELB + 31*common): 2452.4058
+
+========== TRIAL 6 ==========
+Common samples: 10220
+P0 Original                  | PC1= 100.00% | rank= 1.000 | RMS= 1410.7294
+P1 Without ELB               | PC1=  99.75% | rank= 1.020 | RMS=  134.2595
+Retained channels: ['ELA', 'ELC', 'ELI', 'ELT', 'ERA', 'ERB', 'ERI', 'ERT']
+P2 Without ELB/flatlines     | PC1=  99.75% | rank= 1.020 | RMS=  142.4037
+P3 CAR                       | PC1=  81.29% | rank= 2.078 | RMS=    7.1499
+P4 Median reference          | PC1=  81.71% | rank= 2.113 | RMS=    7.5218
+P5 Around-ear reference      | PC1=  97.06% | rank= 1.167 | RMS=   41.6289
+
+Reference contamination test:
+ELB/common slope: -30.4841
+ELB/common Pearson: -0.957914
+RMS(ELB + 31*common): 1277.3874
