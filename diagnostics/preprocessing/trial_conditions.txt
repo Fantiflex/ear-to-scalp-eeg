@@ -1,0 +1,188 @@
+
+============================================================
+SUBJECT 01
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T4 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T6 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+
+============================================================
+SUBJECT 02
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T3 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T4 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T6 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 03
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T6 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 04
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T2 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T3 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T4 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 05
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T3 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T4 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T6 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 06
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T2 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T5 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T6 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 07
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+
+============================================================
+SUBJECT 08
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T3 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T5 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+
+============================================================
+SUBJECT 09
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T3 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T4 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T6 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 10
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T2 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 11
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T2 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 12
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T2 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T3 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T4 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+
+============================================================
+SUBJECT 13
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T2 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T3 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T5 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 14
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T2 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T4 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T5 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T6 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+
+============================================================
+SUBJECT 15
+============================================================
+Video dtype: uint8
+Video shape: (6,)
+T1 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+T2 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T3 | video=np.uint8(0) | ear=np.uint8(1) | speaker=np.uint8(1)
+T4 | video=np.uint8(1) | ear=np.uint8(2) | speaker=np.uint8(2)
+T5 | video=np.uint8(0) | ear=np.uint8(2) | speaker=np.uint8(2)
+T6 | video=np.uint8(1) | ear=np.uint8(1) | speaker=np.uint8(1)
+
+=== VIDEO CONDITION DISTRIBUTION ===
+'0': 45 trials
+  Duration: 7.50 hours
+  Windows: 6750
+'1': 45 trials
+  Duration: 7.50 hours
+  Windows: 6750

@@ -1,0 +1,134 @@
+S01 T1 video=0 ear=9/12 scalp=28/29 PC1=0.484 windows=103/150 
+S01 T2 video=1 ear=9/12 scalp=28/29 PC1=0.450 windows=0/150 video
+S01 T3 video=0 ear=9/12 scalp=28/29 PC1=0.374 windows=118/150 
+S01 T4 video=1 ear=8/12 scalp=28/29 PC1=0.492 windows=0/150 video
+S01 T5 video=0 ear=8/12 scalp=28/29 PC1=0.386 windows=89/150 
+S01 T6 video=1 ear=8/12 scalp=28/29 PC1=0.507 windows=0/150 video
+S02 T1 video=1 ear=7/12 scalp=29/29 PC1=0.387 windows=0/150 video;ear_channels
+S02 T2 video=0 ear=8/12 scalp=29/29 PC1=0.442 windows=98/150 
+S02 T3 video=0 ear=8/12 scalp=29/29 PC1=0.648 windows=88/150 
+S02 T4 video=0 ear=0/12 scalp=29/29 PC1=nan windows=0/150 ear_channels;ear_rank_unavailable
+S02 T5 video=1 ear=0/12 scalp=29/29 PC1=nan windows=0/150 video;ear_channels;ear_rank_unavailable
+S02 T6 video=1 ear=0/12 scalp=28/29 PC1=nan windows=0/150 video;ear_channels;ear_rank_unavailable
+S03 T1 video=1 ear=12/12 scalp=29/29 PC1=0.377 windows=0/150 video
+S03 T2 video=1 ear=12/12 scalp=29/29 PC1=0.521 windows=0/150 video
+S03 T3 video=0 ear=12/12 scalp=29/29 PC1=0.417 windows=148/150 
+S03 T4 video=1 ear=12/12 scalp=29/29 PC1=0.425 windows=0/150 video
+S03 T5 video=0 ear=12/12 scalp=29/29 PC1=0.448 windows=150/150 
+S03 T6 video=0 ear=12/12 scalp=29/29 PC1=0.444 windows=146/150 
+S04 T1 video=0 ear=10/12 scalp=28/29 PC1=0.211 windows=0/150 
+S04 T2 video=1 ear=12/12 scalp=28/29 PC1=0.252 windows=0/150 video
+S04 T3 video=0 ear=12/12 scalp=28/29 PC1=0.260 windows=150/150 
+S04 T4 video=1 ear=12/12 scalp=27/29 PC1=0.239 windows=0/150 video
+S04 T5 video=1 ear=12/12 scalp=27/29 PC1=0.259 windows=0/150 video
+S04 T6 video=0 ear=10/12 scalp=28/29 PC1=0.206 windows=150/150 
+S05 T1 video=1 ear=12/12 scalp=29/29 PC1=0.453 windows=0/150 video
+S05 T2 video=0 ear=12/12 scalp=28/29 PC1=0.498 windows=147/150 
+S05 T3 video=0 ear=11/12 scalp=29/29 PC1=0.467 windows=150/150 
+S05 T4 video=1 ear=12/12 scalp=29/29 PC1=0.502 windows=0/150 video
+S05 T5 video=1 ear=11/12 scalp=28/29 PC1=0.364 windows=0/150 video
+S05 T6 video=0 ear=12/12 scalp=29/29 PC1=0.535 windows=115/150 
+S06 T1 video=1 ear=9/12 scalp=29/29 PC1=0.426 windows=0/150 video
+S06 T2 video=0 ear=9/12 scalp=28/29 PC1=0.376 windows=147/150 
+S06 T3 video=0 ear=10/12 scalp=29/29 PC1=0.781 windows=87/150 
+S06 T4 video=1 ear=10/12 scalp=29/29 PC1=0.531 windows=0/150 video
+S06 T5 video=1 ear=9/12 scalp=29/29 PC1=0.591 windows=0/150 video
+S06 T6 video=0 ear=10/12 scalp=29/29 PC1=0.567 windows=149/150 
+S07 T1 video=1 ear=11/12 scalp=29/29 PC1=0.365 windows=0/150 video
+S07 T2 video=1 ear=12/12 scalp=28/29 PC1=0.366 windows=0/150 video
+S07 T3 video=0 ear=12/12 scalp=27/29 PC1=0.354 windows=150/150 
+S07 T4 video=0 ear=12/12 scalp=29/29 PC1=0.302 windows=150/150 
+S07 T5 video=1 ear=12/12 scalp=29/29 PC1=0.339 windows=0/150 video
+S07 T6 video=0 ear=12/12 scalp=28/29 PC1=0.324 windows=149/150 
+S08 T1 video=1 ear=10/12 scalp=28/29 PC1=0.343 windows=0/150 video
+S08 T2 video=1 ear=10/12 scalp=29/29 PC1=0.300 windows=0/150 video
+S08 T3 video=0 ear=6/12 scalp=29/29 PC1=0.388 windows=0/150 ear_channels
+S08 T4 video=0 ear=6/12 scalp=29/29 PC1=0.600 windows=0/150 ear_channels
+S08 T5 video=0 ear=7/12 scalp=29/29 PC1=0.597 windows=0/150 ear_channels
+S08 T6 video=1 ear=9/12 scalp=29/29 PC1=0.425 windows=0/150 video
+S09 T1 video=1 ear=12/12 scalp=29/29 PC1=0.470 windows=0/150 video
+S09 T2 video=0 ear=12/12 scalp=28/29 PC1=0.513 windows=150/150 
+S09 T3 video=0 ear=12/12 scalp=28/29 PC1=0.479 windows=150/150 
+S09 T4 video=0 ear=12/12 scalp=28/29 PC1=0.485 windows=149/150 
+S09 T5 video=1 ear=12/12 scalp=29/29 PC1=0.515 windows=0/150 video
+S09 T6 video=1 ear=12/12 scalp=29/29 PC1=0.518 windows=0/150 video
+S10 T1 video=1 ear=10/12 scalp=27/29 PC1=0.366 windows=0/150 video
+S10 T2 video=0 ear=10/12 scalp=27/29 PC1=0.295 windows=146/150 
+S10 T3 video=1 ear=11/12 scalp=29/29 PC1=0.428 windows=0/150 video
+S10 T4 video=0 ear=10/12 scalp=29/29 PC1=0.279 windows=149/150 
+S10 T5 video=1 ear=9/12 scalp=29/29 PC1=0.414 windows=0/150 video
+S10 T6 video=0 ear=10/12 scalp=29/29 PC1=0.292 windows=149/150 
+S11 T1 video=0 ear=12/12 scalp=29/29 PC1=0.356 windows=138/150 
+S11 T2 video=1 ear=12/12 scalp=29/29 PC1=0.361 windows=0/150 video
+S11 T3 video=0 ear=12/12 scalp=28/29 PC1=0.357 windows=131/150 
+S11 T4 video=1 ear=12/12 scalp=29/29 PC1=0.297 windows=0/150 video
+S11 T5 video=0 ear=12/12 scalp=29/29 PC1=0.373 windows=141/150 
+S11 T6 video=1 ear=12/12 scalp=29/29 PC1=0.387 windows=0/150 video
+S12 T1 video=0 ear=5/12 scalp=26/29 PC1=0.941 windows=0/150 ear_channels;scalp_channels
+S12 T2 video=0 ear=9/12 scalp=26/29 PC1=0.444 windows=0/150 scalp_channels
+S12 T3 video=1 ear=9/12 scalp=28/29 PC1=0.423 windows=0/150 video
+S12 T4 video=1 ear=9/12 scalp=28/29 PC1=0.433 windows=0/150 video
+S12 T5 video=0 ear=9/12 scalp=28/29 PC1=0.426 windows=150/150 
+S12 T6 video=1 ear=9/12 scalp=29/29 PC1=0.452 windows=0/150 video
+S13 T1 video=1 ear=12/12 scalp=28/29 PC1=0.422 windows=0/150 video
+S13 T2 video=0 ear=12/12 scalp=28/29 PC1=0.431 windows=148/150 
+S13 T3 video=0 ear=12/12 scalp=29/29 PC1=0.419 windows=149/150 
+S13 T4 video=1 ear=12/12 scalp=29/29 PC1=0.442 windows=0/150 video
+S13 T5 video=1 ear=12/12 scalp=29/29 PC1=0.416 windows=0/150 video
+S13 T6 video=0 ear=12/12 scalp=29/29 PC1=0.405 windows=146/150 
+S14 T1 video=0 ear=10/12 scalp=29/29 PC1=0.410 windows=149/150 
+S14 T2 video=1 ear=9/12 scalp=29/29 PC1=0.418 windows=0/150 video
+S14 T3 video=0 ear=10/12 scalp=27/29 PC1=0.282 windows=148/150 
+S14 T4 video=1 ear=10/12 scalp=29/29 PC1=0.335 windows=0/150 video
+S14 T5 video=1 ear=10/12 scalp=28/29 PC1=0.263 windows=0/150 video
+S14 T6 video=0 ear=9/12 scalp=29/29 PC1=0.317 windows=149/150 
+S15 T1 video=1 ear=11/12 scalp=28/29 PC1=0.331 windows=0/150 video
+S15 T2 video=0 ear=12/12 scalp=29/29 PC1=0.400 windows=147/150 
+S15 T3 video=0 ear=12/12 scalp=29/29 PC1=0.337 windows=148/150 
+S15 T4 video=1 ear=12/12 scalp=29/29 PC1=0.280 windows=0/150 video
+S15 T5 video=0 ear=12/12 scalp=29/29 PC1=0.322 windows=134/150 
+S15 T6 video=1 ear=12/12 scalp=29/29 PC1=0.330 windows=0/150 video
+
+=== COVERAGE BY PARTITION ===
+            sum  count      mean
+partition                       
+test        310    900  0.344444
+train      4315  10800  0.399537
+val         630   1800  0.350000
+
+=== COVERAGE BY SUBJECT ===
+            sum  count      mean
+subject_id                      
+1           310    900  0.344444
+2           186    900  0.206667
+3           444    900  0.493333
+4           300    900  0.333333
+5           412    900  0.457778
+6           383    900  0.425556
+7           449    900  0.498889
+8             0    900  0.000000
+9           449    900  0.498889
+10          444    900  0.493333
+11          410    900  0.455556
+12          150    900  0.166667
+13          443    900  0.492222
+14          446    900  0.495556
+15          429    900  0.476667
+
+=== REJECTION REASONS ===
+reason
+video                   6750
+window_ear_channels     1770
+ear_channels            1200
+ear_missingness          655
+ear_artifact             625
+ear_rank_unavailable     450
+scalp_channels           300
+scalp_missingness        231
+existing_qc              150
+scalp_artifact            13
+Name: count, dtype: int64
+
+Retained 5255/13500 windows
+Duration: 5.84 hours
+Manifest saved to data/processed/manifests/fold_01
