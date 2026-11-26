@@ -1,4 +1,3 @@
-
 """Train Temporal Conformer on EAR-SAAD with subject-wise CV."""
 
 import argparse
@@ -54,9 +53,7 @@ class Tee:
 
 
 def start_file_logging(output_dir):
-    log_file = (output_dir / "train.log").open(
-        "a", encoding="utf-8", buffering=1
-    )
+    log_file = (output_dir / "train.log").open("a", encoding="utf-8", buffering=1)
 
     original_stdout = sys.stdout
     original_stderr = sys.stderr
@@ -70,6 +67,7 @@ def start_file_logging(output_dir):
         log_file.close()
 
     atexit.register(cleanup)
+
 
 def set_seed(seed):
     random.seed(seed)
@@ -91,6 +89,7 @@ def make_loaders(split, args):
         subject_ids=split.train_subjects,
         window_seconds=4.0,
         stride_seconds=4.0,
+        manifest_path=args.train_manifest,
     )
 
     val_dataset = EarSAADNumpyDataset(
@@ -98,16 +97,41 @@ def make_loaders(split, args):
         subject_ids=split.val_subjects,
         window_seconds=4.0,
         stride_seconds=4.0,
+        manifest_path=args.val_manifest,
     )
 
     train_ids = {s[1] for s in train_dataset.samples}
     val_ids = {s[1] for s in val_dataset.samples}
 
-    assert train_ids == set(split.train_subjects)
-    assert val_ids == set(split.val_subjects)
+    if not train_dataset or not val_dataset:
+        raise RuntimeError("Empty train or validation dataset")
+
+    assert train_ids.issubset(set(split.train_subjects))
+    assert val_ids.issubset(set(split.val_subjects))
+
     assert train_ids.isdisjoint(val_ids)
     assert train_ids.isdisjoint(split.test_subjects)
     assert val_ids.isdisjoint(split.test_subjects)
+
+    print("\n=== DATASET COVERAGE ===")
+    print("Train manifest:", args.train_manifest)
+    print("Val manifest:", args.val_manifest)
+
+    print("Effective train subjects:", sorted(train_ids))
+    print("Effective val subjects:", sorted(val_ids))
+
+    print(
+        "Excluded train subjects:",
+        sorted(set(split.train_subjects) - train_ids),
+    )
+
+    print(
+        "Excluded val subjects:",
+        sorted(set(split.val_subjects) - val_ids),
+    )
+
+    print("Train windows:", len(train_dataset))
+    print("Val windows:", len(val_dataset))
 
     train_loader = DataLoader(
         train_dataset,
@@ -165,10 +189,7 @@ def run_epoch(
         x = normalized[modality].to(device)
         y = normalized["scalp"].to(device)
 
-        input_mask = batch[
-            f"{modality}_observed_mask"
-        ].to(device)
-
+        input_mask = batch[f"{modality}_observed_mask"].to(device)
 
         n_valid = int(target_mask.sum().item())
         if n_valid == 0:
@@ -203,11 +224,16 @@ def run_epoch(
             if training and loss.item() > 1000:
                 print(
                     "HIGH LOSS |",
-                    "subjects:", batch["subject_id"].tolist(),
-                    "max_input:", x.abs().max().item(),
-                    "max_target:", y[target_mask].abs().max().item(),
-                    "max_prediction:", prediction.abs().max().item(),
-                    "loss:", loss.item(),
+                    "subjects:",
+                    batch["subject_id"].tolist(),
+                    "max_input:",
+                    x.abs().max().item(),
+                    "max_target:",
+                    y[target_mask].abs().max().item(),
+                    "max_prediction:",
+                    prediction.abs().max().item(),
+                    "loss:",
+                    loss.item(),
                     flush=True,
                 )
 
@@ -260,7 +286,7 @@ def run_epoch(
 
     return {
         "mse": mse,
-        "rmse": mse ** 0.5,
+        "rmse": mse**0.5,
         "observations": total_observations,
     }
 
@@ -339,9 +365,29 @@ def main():
         choices=["none", "car", "same_ear", "other_ear"],
         default="none",
     )
+    parser.add_argument(
+        "--train-manifest",
+        type=str,
+        default=None,
+    )
 
-    
+    parser.add_argument(
+        "--val-manifest",
+        type=str,
+        default=None,
+    )
+
     args = parser.parse_args()
+    if args.train_manifest or args.val_manifest:
+        if args.modality != "in_ear":
+            parser.error("D3 quality manifests currently support in-ear EEG only.")
+
+        for manifest in (
+            args.train_manifest,
+            args.val_manifest,
+        ):
+            if manifest is not None and not Path(manifest).is_file():
+                parser.error(f"Manifest not found: {manifest}")
 
     if args.epochs < 1 or args.batch_size < 1:
         parser.error("epochs and batch-size must be positive")
@@ -356,14 +402,11 @@ def main():
         experiment_name = f"mse_pearson_w{args.pearson_weight:g}"
 
     elif args.loss == "derivative":
-        experiment_name = (
-            f"mse_derivative_w{args.derivative_weight:g}"
-        )
+        experiment_name = f"mse_derivative_w{args.derivative_weight:g}"
 
     else:
         parser.error(f"Unsupported loss: {args.loss}")
 
-    
     set_seed(args.seed)
     device = get_device()
 
@@ -389,14 +432,11 @@ def main():
         and not Path("/content/drive/MyDrive").is_dir()
     ):
         parser.error(
-            "Google Drive is not mounted. "
-            "Run drive.mount('/content/drive') first."
+            "Google Drive is not mounted. Run drive.mount('/content/drive') first."
         )
 
     # Unique timestamp prevents overwriting previous experiments.
-    timestamp = datetime.now(UTC).strftime(
-        "%Y%m%d_%H%M%S_%f"
-    )
+    timestamp = datetime.now(UTC).strftime("%Y%m%d_%H%M%S_%f")
 
     run_name = f"seed_{args.seed}_{timestamp}"
 
@@ -423,9 +463,7 @@ def main():
         "test_subjects": list(split.test_subjects),
     }
 
-    (output_dir / "config.json").write_text(
-        json.dumps(run_config, indent=2)
-    )
+    (output_dir / "config.json").write_text(json.dumps(run_config, indent=2))
 
     # Save console logs automatically.
     start_file_logging(output_dir)
@@ -442,7 +480,7 @@ def main():
     print(f"Reserved test subjects: {split.test_subjects}")
 
     train_loader, val_loader = make_loaders(split, args)
-    
+
     class ReReferencedLoader:
         """Re-iterable loader applying re-referencing on the fly."""
 
@@ -458,7 +496,6 @@ def main():
                 else:
                     yield batch
 
-
     normalization_stats = fit_normalization(
         ReReferencedLoader(
             train_loader,
@@ -468,9 +505,6 @@ def main():
         mode=args.normalization,
         modalities=(args.modality, "scalp"),
     )
-
-
-
 
     (output_dir / "normalization_stats.json").write_text(
         json.dumps(normalization_stats, indent=2)
@@ -512,9 +546,7 @@ def main():
     best_epoch = 0
     patience_counter = 0
 
-    print(
-        f"Parameters: {sum(p.numel() for p in model.parameters()):,}"
-    )
+    print(f"Parameters: {sum(p.numel() for p in model.parameters()):,}")
 
     for epoch in range(1, args.epochs + 1):
         train_metrics = run_epoch(
@@ -601,6 +633,14 @@ def main():
         "parameters": sum(p.numel() for p in model.parameters()),
         "normalization": args.normalization,
         "rereference": args.rereference,
+        "train_manifest": args.train_manifest,
+        "val_manifest": args.val_manifest,
+        "n_train_windows": len(train_loader.dataset),
+        "n_val_windows": len(val_loader.dataset),
+        "effective_train_subjects": sorted(
+            {s[1] for s in train_loader.dataset.samples}
+        ),
+        "effective_val_subjects": sorted({s[1] for s in val_loader.dataset.samples}),
     }
 
     with (output_dir / "summary.json").open("w") as f:

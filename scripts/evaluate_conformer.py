@@ -1,4 +1,3 @@
-
 """Evaluate EEG reconstruction quality on held-out validation subjects."""
 
 import argparse
@@ -32,9 +31,7 @@ def load_model(checkpoint_path, device, expected_fold):
     )
 
     if int(checkpoint["fold"]) != expected_fold:
-        raise ValueError(
-            f"Wrong checkpoint fold: {checkpoint['fold']}"
-        )
+        raise ValueError(f"Wrong checkpoint fold: {checkpoint['fold']}")
 
     cfg = ConformerConfig(**checkpoint["model_config"])
 
@@ -56,8 +53,6 @@ def load_model(checkpoint_path, device, expected_fold):
     return model, checkpoint
 
 
-
-
 def predict(
     model,
     batch,
@@ -72,8 +67,7 @@ def predict(
     if rereference_mode != "none":
         if modality != "in_ear":
             raise ValueError(
-                "Re-referencing is currently supported "
-                "only for in-ear EEG."
+                "Re-referencing is currently supported only for in-ear EEG."
             )
 
         batch = rereference_batch(
@@ -91,14 +85,10 @@ def predict(
 
     # 3. Prepare the model inputs.
     x = batch[modality].to(device)
-    mask = batch[
-        f"{modality}_observed_mask"
-    ].to(device)
+    mask = batch[f"{modality}_observed_mask"].to(device)
 
     # 4. Predict in the model's output space.
-    parameters = inspect.signature(
-        model.forward
-    ).parameters
+    parameters = inspect.signature(model.forward).parameters
 
     if "observed_mask" in parameters:
         prediction = model(x, observed_mask=mask)
@@ -119,6 +109,71 @@ def predict(
 
 
 def calculate_metrics(target, prediction, mask):
+    target = target.astype(np.float64)
+    prediction = prediction.astype(np.float64)
+    mask = mask.astype(bool)
+
+    if not mask.any():
+        raise RuntimeError("No valid scalp targets")
+
+    if not np.isfinite(prediction[mask]).all():
+        raise RuntimeError("Non-finite predictions")
+
+    n_channels = target.shape[1]
+    per_channel = []
+
+    for ch in range(n_channels):
+        valid = mask[:, ch, :]
+        y = target[:, ch, :][valid]
+        p = prediction[:, ch, :][valid]
+
+        mse = rmse = pearson = std_ratio = float("nan")
+
+        if len(y) > 0:
+            mse = float(np.mean((y - p) ** 2))
+            rmse = float(np.sqrt(mse))
+
+            target_std = float(np.std(y))
+            pred_std = float(np.std(p))
+
+            if target_std > 0:
+                std_ratio = pred_std / target_std
+
+                if pred_std > 0:
+                    pearson = float(np.corrcoef(y, p)[0, 1])
+
+        per_channel.append(
+            {
+                "channel": ch,
+                "mse": mse,
+                "rmse": rmse,
+                "pearson": pearson,
+                "std_ratio": std_ratio,
+                "n_observed": int(valid.sum()),
+            }
+        )
+
+    y = target[mask]
+    p = prediction[mask]
+
+    global_mse = float(np.mean((y - p) ** 2))
+    zero_mse = float(np.mean(y**2))
+
+    correlations = np.array([item["pearson"] for item in per_channel])
+
+    std_ratios = np.array([item["std_ratio"] for item in per_channel])
+
+    return {
+        "global_mse": global_mse,
+        "global_rmse": float(np.sqrt(global_mse)),
+        "mean_channel_pearson": float(np.nanmean(correlations)),
+        "median_std_ratio": float(np.nanmedian(std_ratios)),
+        "zero_baseline_mse": zero_mse,
+        "skill_vs_zero": (1.0 - global_mse / zero_mse if zero_mse > 0 else None),
+        "n_valid_targets": int(mask.sum()),
+        "n_windows": int(target.shape[0]),
+        "per_channel": per_channel,
+    }
     n_channels = target.shape[1]
     per_channel = []
 
@@ -138,38 +193,32 @@ def calculate_metrics(target, prediction, mask):
             else:
                 pearson = float("nan")
 
-        per_channel.append({
-            "channel": ch,
-            "mse": mse,
-            "rmse": rmse,
-            "pearson": pearson,
-            "n_observed": int(valid.sum()),
-        })
+        per_channel.append(
+            {
+                "channel": ch,
+                "mse": mse,
+                "rmse": rmse,
+                "pearson": pearson,
+                "n_observed": int(valid.sum()),
+            }
+        )
 
     valid = mask.astype(bool)
-    global_mse = float(
-        np.mean((target[valid] - prediction[valid]) ** 2)
-    )
+    global_mse = float(np.mean((target[valid] - prediction[valid]) ** 2))
 
-    correlations = np.array(
-        [item["pearson"] for item in per_channel]
-    )
+    correlations = np.array([item["pearson"] for item in per_channel])
 
     return {
         "global_mse": global_mse,
         "global_rmse": float(np.sqrt(global_mse)),
-        "mean_channel_pearson": float(
-            np.nanmean(correlations)
-        ),
+        "mean_channel_pearson": float(np.nanmean(correlations)),
         "per_channel": per_channel,
     }
 
 
 def plot_metrics(metrics, output_dir):
     channels = np.arange(len(metrics["per_channel"]))
-    correlations = [
-        x["pearson"] for x in metrics["per_channel"]
-    ]
+    correlations = [x["pearson"] for x in metrics["per_channel"]]
     errors = [x["mse"] for x in metrics["per_channel"]]
 
     fig, ax = plt.subplots(figsize=(10, 4))
@@ -215,9 +264,7 @@ def plot_reconstructions(examples, output_dir, fs):
             valid = mask[ch].astype(bool)
 
             actual = np.where(valid, target[ch], np.nan)
-            predicted = np.where(
-                valid, prediction[ch], np.nan
-            )
+            predicted = np.where(valid, prediction[ch], np.nan)
 
             ax.plot(time, actual, label="Ground truth")
             ax.plot(
@@ -231,9 +278,7 @@ def plot_reconstructions(examples, output_dir, fs):
 
         axes[0].legend()
         axes[-1].set_xlabel("Time (s)")
-        fig.suptitle(
-            f"Subject {subject_id} — Scalp EEG Reconstruction"
-        )
+        fig.suptitle(f"Subject {subject_id} — Scalp EEG Reconstruction")
         fig.tight_layout()
         fig.savefig(
             output_dir / f"reconstruction_subject_{subject_id}.png",
@@ -263,20 +308,18 @@ def analyze_amplitude(target, prediction, mask, subject_ids, output_dir):
             target_std = float(np.std(y))
             pred_std = float(np.std(p))
 
-            ratio = (
-                pred_std / target_std
-                if target_std > 1e-8
-                else float("nan")
-            )
+            ratio = pred_std / target_std if target_std > 1e-8 else float("nan")
 
-            records.append({
-                "subject": int(subject),
-                "channel": ch,
-                "target_std": target_std,
-                "prediction_std": pred_std,
-                "std_ratio": ratio,
-                "n_observed": len(y),
-            })
+            records.append(
+                {
+                    "subject": int(subject),
+                    "channel": ch,
+                    "target_std": target_std,
+                    "prediction_std": pred_std,
+                    "std_ratio": ratio,
+                    "n_observed": len(y),
+                }
+            )
 
     df = pd.DataFrame(records)
 
@@ -319,9 +362,7 @@ def analyze_amplitude(target, prediction, mask, subject_ids, output_dir):
     plt.close(fig)
 
     # Figure 2: target and prediction standard deviations
-    grouped = df.groupby("channel")[
-        ["target_std", "prediction_std"]
-    ].mean()
+    grouped = df.groupby("channel")[["target_std", "prediction_std"]].mean()
 
     fig, ax = plt.subplots(figsize=(11, 5))
 
@@ -357,9 +398,7 @@ def analyze_amplitude(target, prediction, mask, subject_ids, output_dir):
     print("\n=== Amplitude Analysis ===")
     for subject, group in df.groupby("subject"):
         print(
-            f"Subject {subject}: "
-            f"median std ratio = "
-            f"{group['std_ratio'].median():.4f}"
+            f"Subject {subject}: median std ratio = {group['std_ratio'].median():.4f}"
         )
 
     print(
@@ -370,17 +409,13 @@ def analyze_amplitude(target, prediction, mask, subject_ids, output_dir):
     return df
 
 
-
-
 def main():
     parser = argparse.ArgumentParser()
     parser.add_argument("--fold", type=int, default=1)
     parser.add_argument(
         "--checkpoint",
         type=Path,
-        default=Path(
-            "results/conformer_cleaned/in_ear/fold_1/best_model.pt"
-        ),
+        default=Path("results/conformer_cleaned/in_ear/fold_1/best_model.pt"),
     )
     parser.add_argument(
         "--data-dir",
@@ -392,28 +427,23 @@ def main():
         default=Path("results/conformer_evaluation/fold_1"),
     )
     parser.add_argument("--batch-size", type=int, default=64)
+    parser.add_argument(
+        "--val-manifest",
+        type=str,
+        default=None,
+    )
     args = parser.parse_args()
 
-    device = torch.device(
-        "cuda" if torch.cuda.is_available() else "cpu"
-    )
+    device = torch.device("cuda" if torch.cuda.is_available() else "cpu")
 
-    model, checkpoint = load_model(
-        args.checkpoint, device, args.fold
-    )
+    model, checkpoint = load_model(args.checkpoint, device, args.fold)
     checkpoint_args = checkpoint.get("args", {})
 
     modality = checkpoint_args.get("modality", "in_ear")
-    rereference_mode = checkpoint_args.get(
-        "rereference", "none"
-    )
-    normalization_stats = checkpoint.get(
-        "normalization_stats"
-    )
+    rereference_mode = checkpoint_args.get("rereference", "none")
+    normalization_stats = checkpoint.get("normalization_stats")
 
-    normalization_mode = checkpoint_args.get(
-        "normalization", "none"
-    )
+    normalization_mode = checkpoint_args.get("normalization", "none")
 
     if normalization_mode != "none" and normalization_stats is None:
         raise ValueError(
@@ -425,22 +455,30 @@ def main():
     print("Modality:", modality)
     print("Re-referencing:", rereference_mode)
     print("Normalization:", normalization_mode)
-    normalization_stats = checkpoint.get(
-        "normalization_stats"
-    )
+    normalization_stats = checkpoint.get("normalization_stats")
 
     print(
         "Normalization:",
         checkpoint.get("args", {}).get("normalization", "none"),
     )
 
-    val_subjects = [
-        int(s) for s in checkpoint["val_subjects"]
-    ]
+    val_subjects = [int(s) for s in checkpoint["val_subjects"]]
 
     dataset = EarSAADNumpyDataset(
         data_dir=args.data_dir,
         subject_ids=val_subjects,
+        window_seconds=4.0,
+        stride_seconds=4.0,
+        manifest_path=args.val_manifest,
+    )
+
+    if len(dataset) == 0:
+        raise RuntimeError("Empty validation dataset")
+
+    print("Validation manifest:", args.val_manifest)
+    print(
+        "Training validation manifest:",
+        checkpoint_args.get("val_manifest"),
     )
     loader = DataLoader(
         dataset,
@@ -472,9 +510,7 @@ def main():
             targets.append(batch["scalp"].numpy())
             predictions.append(pred.cpu().numpy())
             masks.append(batch["target_mask"].numpy())
-            all_subject_ids.append(
-                batch["subject_id"].numpy()
-            )
+            all_subject_ids.append(batch["subject_id"].numpy())
             for i, subject in enumerate(batch["subject_id"]):
                 subject = int(subject)
                 if subject not in examples:
@@ -483,7 +519,6 @@ def main():
                         pred[i].cpu().numpy(),
                         batch["target_mask"][i].numpy(),
                     )
-            
 
     target = np.concatenate(targets)
     prediction = np.concatenate(predictions)
@@ -491,12 +526,29 @@ def main():
     subject_ids = np.concatenate(all_subject_ids)
 
     metrics = calculate_metrics(target, prediction, mask)
+    metrics["val_manifest"] = args.val_manifest
+    metrics["checkpoint"] = str(args.checkpoint)
+    metrics["metrics_by_subject"] = {}
 
+    for subject in np.unique(subject_ids):
+        selected = subject_ids == subject
+
+        subject_metrics = calculate_metrics(
+            target[selected],
+            prediction[selected],
+            mask[selected],
+        )
+
+        metrics["metrics_by_subject"][str(subject)] = {
+            key: value for key, value in subject_metrics.items() if key != "per_channel"
+        }
+
+    metrics["macro_subject_mse"] = float(
+        np.mean([item["global_mse"] for item in metrics["metrics_by_subject"].values()])
+    )
     args.output_dir.mkdir(parents=True, exist_ok=True)
 
-    (args.output_dir / "metrics.json").write_text(
-        json.dumps(metrics, indent=2)
-    )
+    (args.output_dir / "metrics.json").write_text(json.dumps(metrics, indent=2))
 
     plot_metrics(metrics, args.output_dir)
     plot_reconstructions(
@@ -520,6 +572,33 @@ def main():
         f"{metrics['mean_channel_pearson']:.4f}",
     )
     print("Saved to:", args.output_dir)
+    print(
+        "Median std ratio:",
+        metrics["median_std_ratio"],
+    )
+
+    print(
+        "Zero baseline MSE:",
+        metrics["zero_baseline_mse"],
+    )
+
+    print(
+        "Skill vs zero:",
+        metrics["skill_vs_zero"],
+    )
+
+    print(
+        "Macro subject MSE:",
+        metrics["macro_subject_mse"],
+    )
+
+    print("\n=== METRICS BY SUBJECT ===")
+    print(
+        json.dumps(
+            metrics["metrics_by_subject"],
+            indent=2,
+        )
+    )
 
 
 if __name__ == "__main__":
