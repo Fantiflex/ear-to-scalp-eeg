@@ -1,0 +1,87 @@
+
+=== EXPERIMENT CONFIGURATION ===
+{
+  "fold": 1,
+  "lag": 10,
+  "alpha": 1000.0,
+  "seed": 42,
+  "batch_size": 32,
+  "data_dir": "data/processed/numpy",
+  "output_dir": "results/masked_ridge/fold_01/E1",
+  "train_manifest": null,
+  "val_manifest": "data/processed/manifests/fold_01/d3_manifest.csv",
+  "no_standardize": true
+}
+
+=== SUBJECT SPLIT ===
+{'fold': 1, 'train': [4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15], 'val': [2, 3], 'test': [1]}
+Dataset: 10,650 windows | manifest=None
+Dataset: 630 windows | manifest=data/processed/manifests/fold_01/d3_manifest.csv
+
+=== BUILDING TRAINING MATRIX ===
+Training matrix: (106500, 504)
+Target matrix: (106500, 29)
+Target mask: (106500, 29)
+Valid target fraction: 0.976244131455399
+Valid samples per scalp channel: [105901 105368 105626 105416 104800 102571 105224 105604 105767 100763
+ 105662 105746 105839 103507 103121 105713 105693 105658 104295 105349
+  93114  98547 101719 105996 102820 106029 105617  99600 104065]
+
+=== FITTING MASKED RIDGE ===
+Channel 00 | training samples=105,901
+Channel 01 | training samples=105,368
+Channel 02 | training samples=105,626
+Channel 03 | training samples=105,416
+Channel 04 | training samples=104,800
+Channel 05 | training samples=102,571
+Channel 06 | training samples=105,224
+Channel 07 | training samples=105,604
+Channel 08 | training samples=105,767
+Channel 09 | training samples=100,763
+Channel 10 | training samples=105,662
+Channel 11 | training samples=105,746
+Channel 12 | training samples=105,839
+Channel 13 | training samples=103,507
+Channel 14 | training samples=103,121
+Channel 15 | training samples=105,713
+Channel 16 | training samples=105,693
+Channel 17 | training samples=105,658
+Channel 18 | training samples=104,295
+Channel 19 | training samples=105,349
+Channel 20 | training samples=93,114
+Channel 21 | training samples=98,547
+Channel 22 | training samples=101,719
+Channel 23 | training samples=105,996
+Channel 24 | training samples=102,820
+Channel 25 | training samples=106,029
+Channel 26 | training samples=105,617
+Channel 27 | training samples=99,600
+Channel 28 | training samples=104,065
+
+=== EVALUATION ===
+
+=== MSE BY SUBJECT ===
+Subject 2: MSE=18.286313 (427,931 valid channel-samples)
+Subject 3: MSE=7.476877 (1,022,812 valid channel-samples)
+
+=== WORST VALIDATION WINDOWS ===
+{'subject': 2, 'trial': 3, 'start_sample': 3600, 'batch': 3, 'window': 26, 'mse': 24.611644677619452, 'max_abs_prediction': 4.3255109786987305, 'max_abs_target_valid': 18.338577270507812, 'max_abs_input_feature': 36.17954635620117, 'valid_fraction': 0.968103448275862}
+{'subject': 2, 'trial': 3, 'start_sample': 1200, 'batch': 3, 'window': 11, 'mse': 23.633529189396498, 'max_abs_prediction': 4.094339370727539, 'max_abs_target_valid': 18.894012451171875, 'max_abs_input_feature': 35.10726547241211, 'valid_fraction': 0.9556034482758621}
+{'subject': 2, 'trial': 3, 'start_sample': 8080, 'batch': 4, 'window': 27, 'mse': 23.561616937332335, 'max_abs_prediction': 3.902003049850464, 'max_abs_target_valid': 22.680376052856445, 'max_abs_input_feature': 14.717742919921875, 'valid_fraction': 0.9594827586206897}
+{'subject': 2, 'trial': 3, 'start_sample': 5920, 'batch': 4, 'window': 11, 'mse': 22.97545924857223, 'max_abs_prediction': 4.771454334259033, 'max_abs_target_valid': 21.515180587768555, 'max_abs_input_feature': 26.718069076538086, 'valid_fraction': 1.0}
+{'subject': 2, 'trial': 3, 'start_sample': 7760, 'batch': 4, 'window': 23, 'mse': 22.643999606807686, 'max_abs_prediction': 4.185752868652344, 'max_abs_target_valid': 22.295347213745117, 'max_abs_input_feature': 23.491670608520508, 'valid_fraction': 0.9547413793103449}
+{'subject': 2, 'trial': 3, 'start_sample': 1840, 'batch': 3, 'window': 16, 'mse': 22.504261901675108, 'max_abs_prediction': 4.9623918533325195, 'max_abs_target_valid': 19.727489471435547, 'max_abs_input_feature': 28.36123275756836, 'valid_fraction': 1.0}
+{'subject': 2, 'trial': 2, 'start_sample': 1120, 'batch': 0, 'window': 8, 'mse': 22.46840347768614, 'max_abs_prediction': 3.0481441020965576, 'max_abs_target_valid': 23.40290641784668, 'max_abs_input_feature': 20.07933807373047, 'valid_fraction': 1.0}
+{'subject': 2, 'trial': 3, 'start_sample': 2960, 'batch': 3, 'window': 24, 'mse': 22.334240550391883, 'max_abs_prediction': 4.5877580642700195, 'max_abs_target_valid': 18.747329711914062, 'max_abs_input_feature': 28.561635971069336, 'valid_fraction': 0.9853448275862069}
+{'subject': 2, 'trial': 2, 'start_sample': 11840, 'batch': 3, 'window': 1, 'mse': 22.23097041104634, 'max_abs_prediction': 4.837173938751221, 'max_abs_target_valid': 20.26543426513672, 'max_abs_input_feature': 14.19204044342041, 'valid_fraction': 0.9780172413793103}
+{'subject': 2, 'trial': 3, 'start_sample': 8400, 'batch': 4, 'window': 30, 'mse': 22.189264030387406, 'max_abs_prediction': 4.723692893981934, 'max_abs_target_valid': 22.624563217163086, 'max_abs_input_feature': 37.562400817871094, 'valid_fraction': 0.9767241379310345}
+
+=== FINAL METRICS ===
+mse: 10.66537643238751
+rmse: 3.2657887917603476
+mean_channel_pearson: 0.28519785846853113
+median_std_ratio: 0.24054249259100374
+zero_baseline_mse: 11.633342453613428
+skill_vs_zero: 0.0832061830110793
+
+Results saved to results/masked_ridge/fold_01/E1
